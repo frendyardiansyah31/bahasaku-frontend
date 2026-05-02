@@ -9,23 +9,24 @@
  */
 
 import { Routes, Route, Navigate } from 'react-router-dom';
-import PublicRoute  from './guards/PublicRoute';
-import PrivateRoute from './guards/PrivateRoute';
+import PublicRoute  from './PublicRoute';
+import PrivateRoute from './PrivateRoute';
+import notFoundStyles from '../shared/styles/notFound.module.css';
 
 // Pages — import lazy jika ingin code splitting
-import RegisterPage from '../pages/RegisterPage';
-import LoginPage    from '../pages/LoginPage';
+import RegisterPage  from '../modules/auth/pages/RegisterPage';
+import LoginPage     from '../modules/auth/pages/LoginPage';
+import OnboardingPage from '../modules/onboarding/pages/OnboardingPage';
 
 // ── Placeholder pages (implementasi di iterasi berikutnya) ─────────────────
-const DashboardPage  = () => <div style={{ padding: '2rem', fontFamily: 'Sora, sans-serif' }}><h1>Dashboard</h1><p>Selamat datang!</p></div>;
-const OnboardingPage = () => <div style={{ padding: '2rem', fontFamily: 'Sora, sans-serif' }}><h1>Onboarding</h1><p>Mari setup profilmu.</p></div>;
-const TopicsPage     = () => <div style={{ padding: '2rem', fontFamily: 'Sora, sans-serif' }}><h1>Topik</h1></div>;
-const AdminPage      = () => <div style={{ padding: '2rem', fontFamily: 'Sora, sans-serif' }}><h1>Admin Panel</h1></div>;
+const DashboardPage  = () => <div className="p-4"><h1>Dashboard</h1><p>Selamat datang!</p></div>;
+const TopicsPage     = () => <div className="p-4"><h1>Topik</h1></div>;
+const AdminPage      = () => <div className="p-4"><h1>Admin Panel</h1></div>;
 const NotFoundPage   = () => (
-  <div style={{ padding: '4rem', textAlign: 'center', fontFamily: 'Sora, sans-serif' }}>
-    <h1 style={{ fontSize: '5rem', color: '#124663' }}>404</h1>
+  <div className={notFoundStyles.wrapper}>
+    <h1 className={notFoundStyles.title}>404</h1>
     <p>Halaman tidak ditemukan.</p>
-    <a href="/" style={{ color: '#124663' }}>Kembali ke Beranda</a>
+    <a href="/" className={notFoundStyles.link}>Kembali ke Beranda</a>
   </div>
 );
 

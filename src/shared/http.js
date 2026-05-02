@@ -1,5 +1,5 @@
 /**
- * axiosInstance.js
+ * http.js
  * Axios instance terpusat dengan interceptor JWT.
  *
  * Request interceptor  → otomatis attach Authorization header
@@ -13,7 +13,7 @@ import {
   getRefreshToken,
   saveTokens,
   clearTokens,
-} from '../utils/tokenStorage';
+} from './storage';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,

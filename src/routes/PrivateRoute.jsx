@@ -9,7 +9,7 @@
  */
 
 import { Navigate, useLocation } from 'react-router-dom';
-import useAuthStore from '../../features/auth/store/authStore';
+import useAuthStore from '../modules/auth/authStore';
 
 export default function PrivateRoute({ children }) {
   const { isAuthenticated, user } = useAuthStore();

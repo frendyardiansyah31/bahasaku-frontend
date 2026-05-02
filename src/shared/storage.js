@@ -1,5 +1,5 @@
 /**
- * tokenStorage.js
+ * storage.js
  * Helper untuk menyimpan, mengambil, dan menghapus token JWT di localStorage.
  * Catatan P2: Ganti ke httpOnly cookie untuk keamanan yang lebih baik.
  */

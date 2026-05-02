@@ -7,7 +7,8 @@
  */
 
 import { create } from 'zustand';
-import * as authApi from '../api/authApi';
+import * as authApi from './authService';
+import * as onboardingApi from '../onboarding/onboardingService';
 import {
   saveTokens,
   getAccessToken,
@@ -15,7 +16,7 @@ import {
   saveUser,
   getUser,
   clearTokens,
-} from '../../../shared/utils/tokenStorage';
+} from '../../shared/storage';
 
 /**
  * Ekstrak payload dari JWT tanpa library tambahan.
@@ -64,7 +65,7 @@ const useAuthStore = create((set, get) => ({
 
   /**
    * Cek token di localStorage saat pertama kali app dimuat.
-   * Dipanggil di AppProviders agar state terhidrasi sebelum render.
+   * Dipanggil di main.jsx agar state terhidrasi sebelum render.
    */
   initAuth: () => {
     const token = getAccessToken();
@@ -143,6 +144,25 @@ const useAuthStore = create((set, get) => ({
     } finally {
       clearTokens();
       set({ user: null, isAuthenticated: false, error: null });
+    }
+  },
+
+  /**
+   * Kirim data onboarding (country + initial_level) ke server.
+   * Setelah berhasil, update user di state dan localStorage.
+   */
+  onboardUser: async ({ country, initial_level }) => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await onboardingApi.onboard({ country, initial_level });
+      const { user } = data;
+      saveUser(user);
+      set({ user, isLoading: false });
+      return user;
+    } catch (err) {
+      const message = parseDrfError(err, 'Onboarding gagal. Silakan coba lagi.');
+      set({ error: message, isLoading: false });
+      throw err;
     }
   },
 

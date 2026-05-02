@@ -179,6 +179,10 @@
   margin-bottom: 0.35rem;
 }
 
+.inputLabelInline {
+  margin-bottom: 0;
+}
+
 .inputField {
   width: 100%;
   padding: 0.65rem 0.9rem;
@@ -240,6 +244,11 @@
   margin-top: 0.25rem;
 }
 
+.fieldErrorTerms {
+  margin-top: -0.5rem;
+  margin-bottom: 0.75rem;
+}
+
 /* ── Tombol Submit ───────────────────────────────────────── */
 .submitBtn {
   width: 100%;
@@ -295,6 +304,10 @@
   color: #0d3249;
 }
 
+.authLinkSm {
+  font-size: 0.78rem;
+}
+
 .divider {
   text-align: center;
   font-size: 0.8rem;
@@ -322,6 +335,17 @@
   color: #475467;
   cursor: pointer;
   user-select: none;
+}
+
+.checkboxInput {
+  accent-color: #124663;
+  cursor: pointer;
+}
+
+/* ── Footer teks (Sudah/Belum punya akun?) ───────────────── */
+.authFooter {
+  font-size: 0.85rem;
+  color: #999;
 }
 
 /* ── Tombol Google ───────────────────────────────────────── */

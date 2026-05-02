@@ -8,7 +8,7 @@
  */
 
 import { Navigate } from 'react-router-dom';
-import useAuthStore from '../../features/auth/store/authStore';
+import useAuthStore from '../modules/auth/authStore';
 
 export default function PublicRoute({ children }) {
   const { isAuthenticated } = useAuthStore();

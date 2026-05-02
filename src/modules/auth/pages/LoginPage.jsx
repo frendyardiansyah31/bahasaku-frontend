@@ -4,8 +4,8 @@
  * Mobile  : hero biru di atas + form di bawah (sesuai bahasaku_mobile_auth.html)
  */
 
-import { LoginForm } from '../features/auth';
-import styles from '../shared/styles/auth.module.css';
+import LoginForm from '../components/LoginForm';
+import styles from '../auth.module.css';
 
 // ─── Panel Kiri (desktop only) ──────────────────────────────────────────────
 function BrandPanel() {

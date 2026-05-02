@@ -1,6 +1,6 @@
 # BahasaKu — Frontend
 
-Platform latihan Bahasa Indonesia berbasis web. Dibangun dengan React 19 + Vite, menggunakan arsitektur **Feature-Sliced Design (FSD)** dan autentikasi berbasis **JWT**.
+Platform latihan Bahasa Indonesia berbasis web. Dibangun dengan React 19 + Vite, menggunakan arsitektur **Modular Layered** dan autentikasi berbasis **JWT**.
 
 ---
 
@@ -8,7 +8,7 @@ Platform latihan Bahasa Indonesia berbasis web. Dibangun dengan React 19 + Vite,
 
 1. [Tech Stack](#tech-stack)
 2. [Struktur Folder](#struktur-folder)
-3. [Arsitektur: Kenapa FSD?](#arsitektur-kenapa-fsd)
+3. [Arsitektur: Modular Layered](#arsitektur-modular-layered)
 4. [Setup Awal](#setup-awal)
 5. [Penjelasan Tiap File](#penjelasan-tiap-file)
 6. [Alur Data (Data Flow)](#alur-data-data-flow)
@@ -39,97 +39,91 @@ Platform latihan Bahasa Indonesia berbasis web. Dibangun dengan React 19 + Vite,
 
 ```
 frontend/
-├── .env                          # Environment variable (URL backend)
-├── .env.example                  # Template .env untuk tim
-├── index.html                    # HTML entry point, load font Sora
-├── package.json                  # Daftar dependency
-├── vite.config.js                # Konfigurasi Vite + alias @/
+├── .env                             # Environment variable (URL backend)
+├── .env.example                     # Template .env untuk tim
+├── index.html                       # HTML entry point, load font Sora
+├── package.json                     # Daftar dependency
+├── vite.config.js                   # Konfigurasi Vite + alias @/
 │
 └── src/
     │
-    ├── app/                      # Lapisan App — titik masuk aplikasi
-    │   ├── main.jsx              # Entry point React, import Bootstrap CSS
-    │   ├── App.jsx               # Root komponen, render AppRoutes
-    │   └── providers/
-    │       └── AppProviders.jsx  # BrowserRouter + inisialisasi auth
+    ├── main.jsx                     # Entry point: Bootstrap CSS, BrowserRouter, init auth
+    ├── App.jsx                      # Root komponen, render AppRoutes
     │
-    ├── pages/                    # Halaman — hanya layout, tidak ada logika
-    │   ├── RegisterPage.jsx      # Halaman daftar (split layout)
-    │   └── LoginPage.jsx         # Halaman masuk (split layout)
-    │
-    ├── features/                 # Fitur-fitur aplikasi (unit mandiri)
-    │   └── auth/                 # Fitur autentikasi
-    │       ├── api/
-    │       │   └── authApi.js    # Axios calls ke endpoint auth
-    │       ├── store/
-    │       │   └── authStore.js  # Zustand store (state + actions)
+    ├── modules/                     # Satu folder per fitur — semua yang berkaitan ada di sini
+    │   └── auth/                    # Modul autentikasi
+    │       ├── authService.js       # Axios calls ke endpoint auth
+    │       ├── authStore.js         # Zustand store (state + actions)
     │       ├── components/
-    │       │   ├── RegisterForm.jsx  # Form pendaftaran
-    │       │   └── LoginForm.jsx     # Form login
-    │       └── index.js          # Public exports fitur auth
+    │       │   ├── RegisterForm.jsx # Form pendaftaran
+    │       │   └── LoginForm.jsx    # Form login
+    │       └── pages/
+    │           ├── RegisterPage.jsx # Halaman daftar (split layout)
+    │           └── LoginPage.jsx    # Halaman masuk (split layout)
     │
-    ├── shared/                   # Kode yang dipakai lintas fitur
-    │   ├── api/
-    │   │   └── axiosInstance.js  # Axios instance + interceptor JWT
-    │   ├── styles/
-    │   │   └── auth.module.css   # CSS module untuk halaman auth
-    │   └── utils/
-    │       └── tokenStorage.js   # Helper baca/tulis token di localStorage
+    ├── shared/                      # Kode yang dipakai oleh semua modul
+    │   ├── http.js                  # Axios instance + interceptor JWT
+    │   ├── storage.js               # Helper baca/tulis token di localStorage
+    │   └── styles/
+    │       └── auth.module.css      # CSS module untuk halaman auth
     │
-    └── routes/                   # Konfigurasi routing
-        ├── AppRoutes.jsx         # Semua definisi route
-        └── guards/
-            ├── PrivateRoute.jsx  # Guard: cek autentikasi + onboarding
-            └── PublicRoute.jsx   # Guard: redirect jika sudah login
+    └── routes/                      # Konfigurasi routing
+        ├── AppRoutes.jsx            # Semua definisi route
+        ├── PrivateRoute.jsx         # Guard: cek autentikasi + onboarding
+        └── PublicRoute.jsx          # Guard: redirect jika sudah login
 ```
 
 ---
 
-## Arsitektur: Kenapa FSD?
+## Arsitektur: Modular Layered
 
-### Apa itu Feature-Sliced Design?
+### Konsep dasar
 
-FSD adalah metodologi struktur folder yang mengorganisir kode berdasarkan **fitur bisnis**, bukan berdasarkan jenis file (bukan "components/, hooks/, utils/" semuanya di satu level).
-
-### Lapisan FSD yang digunakan di project ini
+Kode diorganisir berdasarkan **fitur/modul**, bukan berdasarkan jenis file. Semua yang berkaitan dengan satu fitur ada di satu folder.
 
 ```
-app → pages → features → shared
+modules/auth/        ← semua kode auth di sini
+  authService.js     ← layer data: HTTP calls
+  authStore.js       ← layer state: Zustand
+  components/        ← layer UI: form & komponen
+  pages/             ← layer UI: halaman lengkap
 ```
 
-Aturannya: **lapisan atas boleh import lapisan bawah, tidak boleh sebaliknya.**
+### Tiga lapisan dalam setiap modul
 
-| Lapisan | Isi | Boleh import dari |
+| Layer | File | Tanggung Jawab |
 |---|---|---|
-| `app/` | Bootstrap aplikasi, providers | `features/`, `pages/`, `shared/`, `routes/` |
-| `pages/` | Layout halaman | `features/`, `shared/` |
-| `features/` | Logika bisnis per fitur | `shared/` |
-| `shared/` | Kode umum tanpa logika bisnis | Tidak ada (dasar) |
-| `routes/` | Routing & guards | `features/`, `pages/` |
+| **Data** | `authService.js` | Hanya kirim/terima data dari API. Tidak tahu soal state atau UI. |
+| **State** | `authStore.js` | Simpan state global, jalankan business logic. Panggil service, update state. |
+| **UI** | `components/`, `pages/` | Tampilkan data dari store, kirim aksi ke store. Tidak panggil API langsung. |
 
-### Kenapa FSD, bukan struktur biasa?
+### Kode bersama (shared/)
 
-**Masalah struktur "biasa" (components/, hooks/, utils/):**
-- Ketika fitur bertambah, folder `components/` jadi ratusan file campur aduk
-- Tidak jelas file mana milik fitur apa
-- Junior developer bingung harus edit file mana
+Kode yang dipakai oleh semua modul masuk ke `shared/`:
 
-**Keuntungan FSD di project ini:**
-- `features/auth/` adalah unit mandiri — semua yang berkaitan auth ada di satu folder
-- Mudah dihapus atau dipindah satu fitur tanpa merusak fitur lain
-- Junior langsung tahu: "mau edit form register? masuk ke `features/auth/components/`"
+| File | Isi |
+|---|---|
+| `shared/http.js` | Axios instance — **infrastruktur HTTP** (interceptor, token attach) |
+| `shared/storage.js` | localStorage helper — **penyimpanan token** |
+| `shared/styles/` | CSS module — **styling bersama** |
 
-### Kenapa Zustand, bukan Redux?
+### Kenapa arsitektur ini?
 
-- Redux terlalu verbose untuk project ini (butuh action, reducer, selector terpisah)
-- Zustand: state + action dalam satu file, tidak perlu boilerplate
-- API-nya sederhana, cocok untuk tim yang ada anggota junior
+**Mudah dipahami:** Semua kode auth ada di `modules/auth/`. Tidak perlu loncat ke 3 folder berbeda.
 
-### Kenapa Axios, bukan Fetch API?
+**Tidak ada aturan tersembunyi:** Import langsung dari file, tidak ada barrel export wajib yang harus dipelajari.
 
-- Interceptor: bisa otomatis attach token dan handle 401 di satu tempat
-- Request/response transformation sudah built-in
-- Error handling lebih mudah (fetch tidak throw error untuk 4xx/5xx)
+**Mudah ditambah fitur baru:** Buat `modules/topics/`, ikuti pola yang sama, selesai.
+
+**Mudah dihapus fitur:** Hapus `modules/auth/`, tidak ada file lain yang rusak (selain route).
+
+---
+
+## Kenapa bukan Redux? Kenapa Axios bukan Fetch?
+
+**Zustand vs Redux:** Redux butuh action, reducer, selector terpisah — terlalu verbose. Zustand: state + action dalam satu file, cocok untuk tim yang ada anggota baru.
+
+**Axios vs Fetch:** Axios bisa pasang interceptor untuk otomatis attach token dan handle 401 di satu tempat. Fetch tidak throw error untuk status 4xx/5xx sehingga error handling lebih panjang.
 
 ---
 
@@ -154,7 +148,7 @@ cd frontend
 npm install
 ```
 
-**3. Buat file `.env`** (sudah ada, cek isinya)
+**3. Buat file `.env`**
 
 ```bash
 # Isi file .env
@@ -188,7 +182,7 @@ Output ada di folder `dist/`.
 HTML satu-satunya di project. Tugasnya:
 - Memuat font **Sora** dari Google Fonts
 - Menyediakan `<div id="root">` tempat React me-render aplikasi
-- Memanggil `/src/app/main.jsx` sebagai entry point JavaScript
+- Memanggil `/src/main.jsx` sebagai entry point JavaScript
 
 Tidak perlu diedit kecuali mau ganti font atau tambah meta tag.
 
@@ -200,40 +194,32 @@ Konfigurasi build tool. Saat ini hanya aktifkan plugin React dan alias `@` → `
 
 ```js
 // Contoh penggunaan alias
-import axiosInstance from '@/shared/api/axiosInstance';
+import axiosInstance from '@/shared/http';
 // sama dengan:
-import axiosInstance from '../../shared/api/axiosInstance';
+import axiosInstance from '../../shared/http';
 ```
 
 ---
 
-### `src/app/main.jsx`
+### `src/main.jsx`
 
 Entry point aplikasi. Tugas utama:
 - Import Bootstrap CSS dan Bootstrap Icons secara global
-- Render `<App>` di dalam `<AppProviders>` dan `<StrictMode>`
+- Sediakan `<BrowserRouter>` untuk React Router
+- Panggil `initAuth()` satu kali saat app pertama dibuka (cek token di localStorage)
+- Render `<App>` di dalam `<StrictMode>`
 
 **Tambah CSS global baru di sini**, bukan di file komponen lain.
 
 ---
 
-### `src/app/App.jsx`
+### `src/App.jsx`
 
 Komponen root yang sangat simpel — hanya render `<AppRoutes />`. Kalau nanti butuh error boundary global, tambahkan di sini.
 
 ---
 
-### `src/app/providers/AppProviders.jsx`
-
-Semua "pembungkus" global ada di sini:
-- `<BrowserRouter>` — untuk React Router
-- `useEffect → initAuth()` — cek token di localStorage setiap kali halaman pertama kali dibuka
-
-**Kalau tambah provider baru** (misalnya React Query, Theme provider), tambahkan di file ini.
-
----
-
-### `src/shared/utils/tokenStorage.js`
+### `src/shared/storage.js`
 
 Helper murni untuk baca/tulis localStorage. Tidak ada logika bisnis di sini.
 
@@ -255,7 +241,7 @@ Helper murni untuk baca/tulis localStorage. Tidak ada logika bisnis di sini.
 
 ---
 
-### `src/shared/api/axiosInstance.js`
+### `src/shared/http.js`
 
 Inti dari komunikasi HTTP. Semua request ke backend harus melalui file ini.
 
@@ -274,11 +260,11 @@ Response 401 masuk
        └─ TIDAK → hapus token → redirect /login
 ```
 
-**Mekanisme antrian** — Jika ada 3 request gagal secara bersamaan saat token expired, hanya 1 refresh yang dikirim. 2 request lainnya menunggu dalam antrian (`failedQueue`) dan di-retry setelah refresh berhasil.
+**Mekanisme antrian** — Jika ada beberapa request gagal bersamaan saat token expired, hanya 1 refresh yang dikirim. Request lain menunggu dalam antrian (`failedQueue`) dan di-retry setelah refresh berhasil.
 
 ---
 
-### `src/features/auth/api/authApi.js`
+### `src/modules/auth/authService.js`
 
 Daftar semua endpoint auth. File ini hanya berisi axios calls — tidak ada logika, tidak ada state.
 
@@ -291,7 +277,7 @@ Daftar semua endpoint auth. File ini hanya berisi axios calls — tidak ada logi
 
 ---
 
-### `src/features/auth/store/authStore.js`
+### `src/modules/auth/authStore.js`
 
 Otak dari fitur auth. Dibangun dengan Zustand.
 
@@ -321,7 +307,7 @@ Otak dari fitur auth. Dibangun dengan Zustand.
 
 ---
 
-### `src/features/auth/components/RegisterForm.jsx`
+### `src/modules/auth/components/RegisterForm.jsx`
 
 Komponen form pendaftaran. Alur kerja:
 
@@ -346,7 +332,7 @@ Field `terms` tidak dikirim ke API — hanya untuk validasi UI.
 
 ---
 
-### `src/features/auth/components/LoginForm.jsx`
+### `src/modules/auth/components/LoginForm.jsx`
 
 Komponen form login. Alur kerja:
 
@@ -362,23 +348,7 @@ User klik "Masuk" → handleSubmit:
 
 ---
 
-### `src/features/auth/index.js`
-
-File ini adalah "pintu" public dari fitur auth. Komponen atau store dari luar fitur **harus import melalui file ini**, bukan langsung ke file internal.
-
-```js
-// BENAR ✓
-import { RegisterForm, useAuthStore } from '@/features/auth';
-
-// SALAH ✗ (langsung ke file internal)
-import RegisterForm from '@/features/auth/components/RegisterForm';
-```
-
-Mengapa? Kalau suatu saat internal file dipindah atau di-rename, yang perlu diubah hanya `index.js`, bukan semua file yang mengimportnya.
-
----
-
-### `src/pages/RegisterPage.jsx` & `src/pages/LoginPage.jsx`
+### `src/modules/auth/pages/RegisterPage.jsx` & `src/modules/auth/pages/LoginPage.jsx`
 
 Halaman wrapper. Tugasnya hanya menyusun layout, tidak ada logika bisnis.
 
@@ -390,7 +360,7 @@ Halaman wrapper. Tugasnya hanya menyusun layout, tidak ada logika bisnis.
 └─────────────────────────────────────────────┘
 ```
 
-Di mobile (<768px): panel kiri tersembunyi, logo kecil muncul di atas form.
+Di mobile (<768px): panel kiri tersembunyi, hero biru muncul di atas form.
 
 ---
 
@@ -414,7 +384,7 @@ CSS Module untuk styling halaman Register dan Login. Menggunakan CSS Modules (bu
 
 ---
 
-### `src/routes/guards/PrivateRoute.jsx`
+### `src/routes/PrivateRoute.jsx`
 
 Guard untuk route yang memerlukan login.
 
@@ -428,7 +398,7 @@ User akses /dashboard:
 
 ---
 
-### `src/routes/guards/PublicRoute.jsx`
+### `src/routes/PublicRoute.jsx`
 
 Guard untuk route yang hanya boleh diakses tamu (belum login).
 
@@ -468,14 +438,14 @@ LoginForm
 authStore.loginUser({ email, password })
   │  panggil
   ▼
-authApi.login({ email, password })
+authService.login({ email, password })
   │  via
   ▼
-axiosInstance.post('/api/auth/login/')
+http.js (axiosInstance).post('/api/auth/login/')
   │  response: { access, refresh, user }
   ▼
-tokenStorage.saveTokens(access, refresh)
-tokenStorage.saveUser(user)
+storage.saveTokens(access, refresh)
+storage.saveUser(user)
   │
   ▼
 authStore: set({ user, isAuthenticated: true })
@@ -487,7 +457,7 @@ LoginForm: navigate('/dashboard' | '/onboarding' | '/admin')
 ### Alur Auto-Refresh Token
 
 ```
-axiosInstance.request (misal GET /api/topics/)
+http.js request (misal GET /api/topics/)
   │  response: 401 Unauthorized
   ▼
 Response Interceptor
@@ -503,7 +473,7 @@ Response Interceptor
 ```
 Browser buka aplikasi
   │
-AppProviders useEffect → authStore.initAuth()
+main.jsx useEffect → authStore.initAuth()
   │  cek localStorage: ada access token?
   ├─ TIDAK → isAuthenticated = false
   └─ YA → decode JWT, cek expiry
@@ -540,7 +510,7 @@ Cari dan ganti `#124663` di file `src/shared/styles/auth.module.css`. Warna ini 
 
 ### Ubah Validasi Form Register
 
-Edit fungsi `validate()` di `src/features/auth/components/RegisterForm.jsx` (baris 24–51).
+Edit fungsi `validate()` di `src/modules/auth/components/RegisterForm.jsx` (baris 24–51).
 
 Contoh: menambahkan validasi password harus mengandung angka:
 ```js
@@ -554,14 +524,14 @@ if (!/\d/.test(form.password)) {
 ### Ubah Teks/Konten Panel Kiri (Branding)
 
 Edit komponen `BrandPanel` di dalam:
-- `src/pages/RegisterPage.jsx` — untuk halaman register
-- `src/pages/LoginPage.jsx` — untuk halaman login
+- `src/modules/auth/pages/RegisterPage.jsx` — untuk halaman register
+- `src/modules/auth/pages/LoginPage.jsx` — untuk halaman login
 
 ---
 
 ### Ubah Redirect Setelah Login
 
-Edit fungsi `getRedirectPath` di `src/features/auth/components/LoginForm.jsx` (baris 35–39):
+Edit fungsi `getRedirectPath` di `src/modules/auth/components/LoginForm.jsx` (baris 35–39):
 
 ```js
 const getRedirectPath = (user) => {
@@ -578,7 +548,7 @@ const getRedirectPath = (user) => {
 Edit `src/routes/AppRoutes.jsx`. Contoh menambahkan halaman profil:
 
 ```jsx
-import ProfilePage from '../pages/ProfilePage';
+import ProfilePage from '../modules/profile/pages/ProfilePage';
 
 // Di dalam <Routes>:
 <Route
@@ -595,13 +565,13 @@ import ProfilePage from '../pages/ProfilePage';
 
 ### Ubah Pesan Error Default (saat API tidak merespons)
 
-Edit parameter `fallback` pada pemanggilan `parseDrfError` di `src/features/auth/store/authStore.js`:
+Edit parameter `fallback` pada pemanggilan `parseDrfError` di `src/modules/auth/authStore.js`:
 
 ```js
-// Baris ~106 — untuk register
+// untuk register
 const message = parseDrfError(err, 'Teks error register di sini.');
 
-// Baris ~128 — untuk login
+// untuk login
 const message = parseDrfError(err, 'Teks error login di sini.');
 ```
 
@@ -670,7 +640,7 @@ set({ user: userData, isAuthenticated: true, isLoading: false });
 **Pengecekan:**
 1. Buka DevTools → Application → Local Storage
 2. Pastikan ada key `bahasaku_access` dengan nilai JWT (tiga bagian dipisah `.`)
-3. Pastikan `AppProviders.jsx` memanggil `initAuth()` di `useEffect`
+3. Pastikan `src/main.jsx` memanggil `initAuth()` di `useEffect`
 
 ---
 
@@ -680,9 +650,10 @@ set({ user: userData, isAuthenticated: true, isLoading: false });
 
 **Solusi untuk development:** Sudah ditangani otomatis oleh Vite dev server.
 
-**Solusi untuk production:** Pastikan web server (Nginx/Apache) dikonfigurasi untuk selalu serve `index.html` untuk semua path:
+**Solusi untuk production (Vercel):** File `vercel.json` sudah ada di root project, berisi rewrite rule yang diperlukan.
+
+**Solusi untuk server lain (Nginx):**
 ```nginx
-# Nginx
 location / {
   try_files $uri $uri/ /index.html;
 }
@@ -694,7 +665,7 @@ location / {
 
 **Penyebab:** Import Bootstrap Icons belum ada atau gagal dimuat.
 
-**Pengecekan:** Pastikan baris berikut ada di `src/app/main.jsx`:
+**Pengecekan:** Pastikan baris berikut ada di `src/main.jsx`:
 ```js
 import 'bootstrap-icons/font/bootstrap-icons.css';
 ```
@@ -713,23 +684,22 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 
 Contoh: menambahkan fitur **Materi** (`/topics`).
 
-### 1. Buat folder fitur
+### 1. Buat folder modul
 
 ```
-src/features/topics/
-├── api/
-│   └── topicsApi.js     ← axios calls ke /api/topics/
-├── store/
-│   └── topicsStore.js   ← Zustand store
+src/modules/topics/
+├── topicsService.js    ← axios calls ke /api/topics/
+├── topicsStore.js      ← Zustand store
 ├── components/
-│   └── TopicList.jsx    ← komponen UI
-└── index.js             ← public exports
+│   └── TopicList.jsx   ← komponen UI
+└── pages/
+    └── TopicsPage.jsx  ← halaman lengkap
 ```
 
-### 2. Buat file API (`topicsApi.js`)
+### 2. Buat file service (`topicsService.js`)
 
 ```js
-import axiosInstance from '@/shared/api/axiosInstance';
+import axiosInstance from '@/shared/http';
 
 export const getTopics = () => axiosInstance.get('/api/topics/');
 export const getTopic  = (id) => axiosInstance.get(`/api/topics/${id}/`);
@@ -739,19 +709,27 @@ export const getTopic  = (id) => axiosInstance.get(`/api/topics/${id}/`);
 
 Ikuti pola yang sama dengan `authStore.js`: state + actions dalam satu `create()`.
 
-### 4. Buat halaman
+### 4. Buat halaman (`pages/TopicsPage.jsx`)
 
-```
-src/pages/TopicsPage.jsx
-```
+Import komponen dari folder yang sama dan susun layout.
 
-Impor komponen dari `@/features/topics` dan susun layout di sini.
+```jsx
+import TopicList from '../components/TopicList';
+
+export default function TopicsPage() {
+  return (
+    <div>
+      <TopicList />
+    </div>
+  );
+}
+```
 
 ### 5. Daftarkan route
 
 Edit `src/routes/AppRoutes.jsx`:
 ```jsx
-import TopicsPage from '../pages/TopicsPage'; // hapus placeholder lama
+import TopicsPage from '../modules/topics/pages/TopicsPage';
 
 <Route
   path="/topics"
@@ -761,14 +739,6 @@ import TopicsPage from '../pages/TopicsPage'; // hapus placeholder lama
     </PrivateRoute>
   }
 />
-```
-
-### 6. Export dari index.js fitur
-
-```js
-// src/features/topics/index.js
-export { default as TopicList }    from './components/TopicList';
-export { default as useTopicsStore } from './store/topicsStore';
 ```
 
 ---
@@ -802,6 +772,36 @@ export { default as useTopicsStore } from './store/topicsStore';
 Field yang paling krusial untuk logika routing:
 - `is_onboarded` — menentukan apakah user diarahkan ke `/onboarding` setelah login
 - `role` — menentukan apakah user diarahkan ke `/admin` atau `/dashboard`
+
+---
+
+## Riwayat Perubahan Arsitektur
+
+### Iterasi 1 — Awal: Feature-Sliced Design (FSD)
+
+Project awalnya menggunakan FSD dengan struktur `app/ → pages/ → features/ → shared/`.
+
+**Masalah yang ditemukan untuk konteks tim:**
+- Aturan barrel export (`index.js`) tidak intuitif — mudah dilanggar tanpa error
+- Dua folder bernama `api/` di level berbeda membingungkan (`shared/api/` vs `features/auth/api/`)
+- Halaman auth dan komponen auth terpisah di dua folder berbeda (`pages/` dan `features/auth/components/`)
+- Terlalu banyak layer untuk project skala kecil-menengah
+
+### Iterasi 1 — Refactor: Modular Layered Architecture
+
+Migrasi ke Modular Layered dengan perubahan berikut:
+
+| Sebelum (FSD) | Sesudah (Modular Layered) | Alasan |
+|---|---|---|
+| `src/features/auth/api/authApi.js` | `src/modules/auth/authService.js` | Nama `authService` lebih deskriptif, tidak ada konflik nama `api/` |
+| `src/features/auth/store/authStore.js` | `src/modules/auth/authStore.js` | Satu level lebih datar, lebih mudah ditemukan |
+| `src/features/auth/components/` | `src/modules/auth/components/` | Semua auth di satu tempat |
+| `src/pages/LoginPage.jsx` | `src/modules/auth/pages/LoginPage.jsx` | Halaman dan komponen satu modul tidak terpisah |
+| `src/shared/api/axiosInstance.js` | `src/shared/http.js` | Tidak ada lagi dua folder `api/`, nama jelas |
+| `src/shared/utils/tokenStorage.js` | `src/shared/storage.js` | Lebih datar, nama jelas |
+| `src/app/providers/AppProviders.jsx` | Digabung ke `src/main.jsx` | Hapus indirection yang tidak perlu |
+| `src/routes/guards/PrivateRoute.jsx` | `src/routes/PrivateRoute.jsx` | Hapus subfolder untuk 2 file |
+| `src/features/auth/index.js` | Dihapus | Barrel export tidak wajib, import langsung natural |
 
 ---
 

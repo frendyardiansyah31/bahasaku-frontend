@@ -1,0 +1,17 @@
+/* ============================================================
+   notFound.module.css — Styles halaman 404
+   ============================================================ */
+
+.wrapper {
+  padding: 4rem;
+  text-align: center;
+}
+
+.title {
+  font-size: 5rem;
+  color: #124663;
+}
+
+.link {
+  color: #124663;
+}

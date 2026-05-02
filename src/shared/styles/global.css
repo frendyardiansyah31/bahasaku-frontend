@@ -1,0 +1,8 @@
+/* ============================================================
+   global.css — Styles app-wide BahasaKu
+   Diimport di main.jsx, berlaku untuk seluruh aplikasi
+   ============================================================ */
+
+body {
+  font-family: 'Sora', sans-serif;
+}

@@ -6,8 +6,8 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import useAuthStore from '../store/authStore';
-import styles from '../../../shared/styles/auth.module.css';
+import useAuthStore from '../authStore';
+import styles from '../auth.module.css';
 
 // ─── Nilai awal state form ─────────────────────────────────────────────────
 const INITIAL_FORM = {
@@ -127,10 +127,10 @@ export default function LoginForm() {
       {/* ── Kata Sandi ──────────────────────────────────────────── */}
       <div className={styles.inputGroup}>
         <div className="d-flex justify-content-between align-items-center mb-1">
-          <label className={styles.inputLabel} htmlFor="password" style={{ marginBottom: 0 }}>
+          <label className={`${styles.inputLabel} ${styles.inputLabelInline}`} htmlFor="password">
             Kata Sandi
           </label>
-          <a href="/forgot-password" className={styles.authLink} style={{ fontSize: '0.78rem' }}>
+          <a href="/forgot-password" className={`${styles.authLink} ${styles.authLinkSm}`}>
             Lupa kata sandi?
           </a>
         </div>
@@ -167,8 +167,7 @@ export default function LoginForm() {
           type="checkbox"
           checked={form.remember}
           onChange={handleChange}
-          className="form-check-input"
-          style={{ accentColor: '#124663', cursor: 'pointer' }}
+          className={`form-check-input ${styles.checkboxInput}`}
         />
         <label className={styles.checkboxLabel} htmlFor="remember">
           Ingat saya 30 hari
@@ -205,7 +204,7 @@ export default function LoginForm() {
       </button>
 
       {/* ── Link ke Register ─────────────────────────────────────── */}
-      <p className="text-center mt-3 mb-0" style={{ fontSize: '0.85rem', color: '#999' }}>
+      <p className={`text-center mt-3 mb-0 ${styles.authFooter}`}>
         Belum punya akun?{' '}
         <Link to="/register" className={styles.authLink}>
           Daftar gratis

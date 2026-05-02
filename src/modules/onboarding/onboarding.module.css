@@ -1,0 +1,557 @@
+/* ============================================================
+   onboarding.module.css — Styles wizard onboarding BahasaKu
+   ============================================================ */
+
+/* ── Layout ──────────────────────────────────────────────── */
+.root {
+  min-height: 100vh;
+  background: #f7f8fa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+/* ── Header: brand + step bar ────────────────────────────── */
+.header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.logo {
+  width: 36px;
+  height: 36px;
+  background: #124663;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.brandName {
+  font-size: 19px;
+  font-weight: 700;
+  color: #124663;
+  letter-spacing: -0.3px;
+}
+
+/* ── Step Bar ─────────────────────────────────────────────── */
+.steps {
+  display: flex;
+  align-items: center;
+}
+
+.stepItem {
+  display: flex;
+  align-items: center;
+}
+
+.stepCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+
+.stepCircle.done {
+  background: #124663;
+  color: #fff;
+}
+
+.stepCircle.active {
+  background: #124663;
+  color: #fff;
+  outline: 3px solid rgba(18, 70, 99, 0.2);
+  outline-offset: 2px;
+}
+
+.stepCircle.idle {
+  background: #e5e7eb;
+  color: #aaa;
+}
+
+.stepLine {
+  width: 52px;
+  height: 2px;
+  background: #e5e7eb;
+  transition: background 0.3s;
+}
+
+.stepLine.done {
+  background: #124663;
+}
+
+/* ── Card ─────────────────────────────────────────────────── */
+.card {
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border-radius: 22px;
+  border: 0.5px solid #e5e7eb;
+  padding: 44px 44px 36px;
+  margin-top: 32px;
+}
+
+/* ── Step header texts ────────────────────────────────────── */
+.stepTag {
+  font-size: 11px;
+  font-weight: 600;
+  color: #124663;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.stepTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  letter-spacing: -0.4px;
+  margin-bottom: 6px;
+}
+
+.stepSub {
+  font-size: 13px;
+  color: #888;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+/* ── Step 1: Name ─────────────────────────────────────────── */
+.nameInput {
+  width: 100%;
+  padding: 14px 18px;
+  font-family: 'Sora', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fafafa;
+  color: #111;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 12px;
+}
+
+.nameInput:focus {
+  border-color: #124663;
+  background: #fff;
+}
+
+.nameInput::placeholder {
+  color: #ccc;
+}
+
+.nameHint {
+  font-size: 12px;
+  color: #bbb;
+}
+
+/* ── Step 2: Country ──────────────────────────────────────── */
+.countrySearch {
+  width: 100%;
+  padding: 12px 16px;
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fafafa;
+  color: #111;
+  outline: none;
+  margin-bottom: 14px;
+  transition: border-color 0.2s;
+}
+
+.countrySearch:focus {
+  border-color: #124663;
+  background: #fff;
+}
+
+.countrySearch::placeholder {
+  color: #bbb;
+}
+
+.countryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.countryBtn {
+  padding: 11px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fafafa;
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.countryBtn:hover {
+  border-color: #124663;
+  color: #124663;
+  background: #f0f6fa;
+}
+
+.countryBtn.selected {
+  border-color: #124663;
+  background: #124663;
+  color: #fff;
+}
+
+.countryFlag {
+  font-size: 18px;
+}
+
+/* ── Step 3: Level ────────────────────────────────────────── */
+.levelList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.levelBtn {
+  padding: 16px 18px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fafafa;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.15s;
+  text-align: left;
+  width: 100%;
+  font-family: 'Sora', sans-serif;
+}
+
+.levelBtn:hover {
+  border-color: #124663;
+  background: #f0f6fa;
+}
+
+.levelBtn.selected {
+  border-color: #124663;
+  background: #124663;
+}
+
+.levelBtn.selected .levelName {
+  color: #fff;
+}
+
+.levelBtn.selected .levelDesc {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.levelBtn.selected .levelBadge {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.levelLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.levelName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+}
+
+.levelDesc {
+  font-size: 12px;
+  color: #888;
+}
+
+.levelBadge {
+  font-size: 11px;
+  font-weight: 600;
+  background: #eef4f7;
+  color: #124663;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* ── Nav (Kembali / Lanjut) ───────────────────────────────── */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 32px;
+}
+
+.btnBack {
+  padding: 11px 22px;
+  background: transparent;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btnBack:hover {
+  border-color: #ccc;
+  color: #555;
+}
+
+.btnNext {
+  padding: 11px 28px;
+  background: #124663;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.btnNext:hover:not(:disabled) {
+  background: #0d3350;
+}
+
+.btnNext:disabled {
+  background: #c5d8e3;
+  cursor: not-allowed;
+}
+
+.progressText {
+  font-size: 12px;
+  color: #bbb;
+}
+
+/* ── Alert error API ──────────────────────────────────────── */
+.alertError {
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  color: #dc2626;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+/* ── Success screen ───────────────────────────────────────── */
+.success {
+  text-align: center;
+  padding: 16px 0;
+}
+
+.successIcon {
+  width: 64px;
+  height: 64px;
+  background: #124663;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 22px;
+}
+
+.successIcon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.successTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+
+.successSubtitle {
+  font-size: 13px;
+  color: #888;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.summary {
+  background: #f7f8fa;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.summaryRow:not(:last-child) {
+  border-bottom: 0.5px solid #e5e7eb;
+}
+
+.summaryKey {
+  font-size: 12px;
+  color: #999;
+}
+
+.summaryVal {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+}
+
+.btnStart {
+  width: 100%;
+  padding: 14px;
+  background: #124663;
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.btnStart:hover {
+  background: #0d3350;
+}
+
+/* ── Mobile top bar (brand + dots) — hidden on desktop ───── */
+.mobileTop {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+/* ── Step dots (mobile pill indicator) ───────────────────── */
+.stepDots {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.stepDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  transition: all 0.2s;
+}
+
+.stepDot.active {
+  background: #124663;
+  width: 20px;
+  border-radius: 99px;
+}
+
+.stepDot.done {
+  background: #124663;
+}
+
+/* ── Step icon per langkah — hidden on desktop ────────────── */
+.stepIcon {
+  display: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: 18px;
+}
+
+.stepIcon1 { background: #eef4f7; }
+.stepIcon2 { background: #eaf7f0; }
+.stepIcon3 { background: #fef3e8; }
+
+/* ── Responsif: mobile ────────────────────────────────────── */
+@media (max-width: 767.98px) {
+  .root {
+    background: #fff;
+    padding: 0;
+    justify-content: flex-start;
+  }
+
+  /* Desktop header (circles + lines) disembunyikan */
+  .header {
+    display: none;
+  }
+
+  /* Card melebar penuh layar tanpa rounding */
+  .card {
+    max-width: none;
+    border-radius: 0;
+    border: none;
+    margin-top: 0;
+    padding: 24px 20px 28px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Mobile top bar dan step icon tampil */
+  .mobileTop {
+    display: flex;
+  }
+
+  .stepIcon {
+    display: flex;
+  }
+
+  /* Logo lebih kecil di dalam mobileTop */
+  .mobileTop .logo {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+    border-radius: 7px;
+  }
+
+  .mobileTop .brandName {
+    font-size: 14px;
+  }
+
+  /* Nav didorong ke bawah dengan flex */
+  .nav {
+    margin-top: auto;
+    padding-top: 20px;
+  }
+
+  /* Step sub text lebih kecil */
+  .stepSub {
+    font-size: 12px;
+  }
+}

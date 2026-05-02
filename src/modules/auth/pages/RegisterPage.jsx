@@ -4,8 +4,8 @@
  * Mobile  : hero biru di atas + form di bawah (sesuai bahasaku_mobile_register_v2.html)
  */
 
-import { RegisterForm } from '../features/auth';
-import styles from '../shared/styles/auth.module.css';
+import RegisterForm from '../components/RegisterForm';
+import styles from '../auth.module.css';
 
 // ─── Panel Kiri (desktop only) ──────────────────────────────────────────────
 function BrandPanel() {

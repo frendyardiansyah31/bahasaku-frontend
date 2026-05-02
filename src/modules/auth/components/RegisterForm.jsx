@@ -7,8 +7,8 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import useAuthStore from '../store/authStore';
-import styles from '../../../shared/styles/auth.module.css';
+import useAuthStore from '../authStore';
+import styles from '../auth.module.css';
 
 // ─── Nilai awal state form ─────────────────────────────────────────────────
 const INITIAL_FORM = {
@@ -258,8 +258,7 @@ export default function RegisterForm() {
           type="checkbox"
           checked={form.terms}
           onChange={handleChange}
-          className="form-check-input mt-1 flex-shrink-0"
-          style={{ accentColor: '#124663', cursor: 'pointer' }}
+          className={`form-check-input mt-1 flex-shrink-0 ${styles.checkboxInput}`}
         />
         <label className={styles.checkboxLabel} htmlFor="terms">
           Saya setuju dengan{' '}
@@ -270,7 +269,7 @@ export default function RegisterForm() {
         </label>
       </div>
       {fieldErrors.terms && (
-        <p className={styles.fieldError} style={{ marginTop: '-0.5rem', marginBottom: '0.75rem' }}>
+        <p className={`${styles.fieldError} ${styles.fieldErrorTerms}`}>
           {fieldErrors.terms}
         </p>
       )}
@@ -305,7 +304,7 @@ export default function RegisterForm() {
       </button>
 
       {/* ── Link ke Login ────────────────────────────────────────── */}
-      <p className="text-center mt-3 mb-0" style={{ fontSize: '0.85rem', color: '#999' }}>
+      <p className={`text-center mt-3 mb-0 ${styles.authFooter}`}>
         Sudah punya akun?{' '}
         <Link to="/login" className={styles.authLink}>
           Masuk

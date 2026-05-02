@@ -1,11 +1,11 @@
 /**
- * authApi.js
+ * authService.js
  * Semua pemanggilan API yang berkaitan dengan autentikasi.
  * Fungsi-fungsi di sini hanya bertanggung jawab mengirim request ke backend.
  * Logika bisnis (simpan token, update state) ada di authStore.
  */
 
-import axiosInstance from '../../../shared/api/axiosInstance';
+import axiosInstance from '../../shared/http';
 
 /**
  * Daftar akun baru.
