@@ -29,7 +29,7 @@ Platform latihan Bahasa Indonesia berbasis web. Dibangun dengan React 19 + Vite,
 | **Axios** | 1 | HTTP client + interceptor JWT |
 | **Bootstrap** | 5 | CSS framework (layout & komponen) |
 | **Bootstrap Icons** | 1.11 | Icon library |
-| **CSS Modules** | — | Scoped custom styles |
+| **CSS Modules** | — | Scoped custom styles per modul |
 
 **Backend API:** `https://frendyardiansyah31-bahasaku-backend.hf.space`
 
@@ -39,38 +39,53 @@ Platform latihan Bahasa Indonesia berbasis web. Dibangun dengan React 19 + Vite,
 
 ```
 frontend/
-├── .env                             # Environment variable (URL backend)
-├── .env.example                     # Template .env untuk tim
-├── index.html                       # HTML entry point, load font Sora
-├── package.json                     # Daftar dependency
-├── vite.config.js                   # Konfigurasi Vite + alias @/
+├── .env                                # Environment variable (URL backend)
+├── .env.example                        # Template .env untuk tim
+├── index.html                          # HTML entry point, load font Sora
+├── package.json                        # Daftar dependency
+├── vite.config.js                      # Konfigurasi Vite + alias @/
 │
 └── src/
     │
-    ├── main.jsx                     # Entry point: Bootstrap CSS, BrowserRouter, init auth
-    ├── App.jsx                      # Root komponen, render AppRoutes
+    ├── main.jsx                        # Entry point: CSS global, BrowserRouter, init auth
+    ├── App.jsx                         # Root komponen, render AppRoutes
     │
-    ├── modules/                     # Satu folder per fitur — semua yang berkaitan ada di sini
-    │   └── auth/                    # Modul autentikasi
-    │       ├── authService.js       # Axios calls ke endpoint auth
-    │       ├── authStore.js         # Zustand store (state + actions)
-    │       ├── components/
-    │       │   ├── RegisterForm.jsx # Form pendaftaran
-    │       │   └── LoginForm.jsx    # Form login
+    ├── modules/                        # Satu folder per fitur
+    │   │
+    │   ├── auth/                       # Modul autentikasi
+    │   │   ├── authService.js          # Axios calls ke endpoint auth
+    │   │   ├── authStore.js            # Zustand store (auth + onboarding actions)
+    │   │   ├── auth.module.css         # CSS Module halaman register & login
+    │   │   ├── components/
+    │   │   │   ├── RegisterForm.jsx    # Form pendaftaran
+    │   │   │   └── LoginForm.jsx       # Form login
+    │   │   └── pages/
+    │   │       ├── RegisterPage.jsx    # Halaman daftar (split layout)
+    │   │       └── LoginPage.jsx       # Halaman masuk (split layout)
+    │   │
+    │   ├── onboarding/                 # Modul pengisian profil awal
+    │   │   ├── onboardingService.js    # Axios call ke POST /api/user/onboarding/
+    │   │   ├── onboarding.module.css   # CSS Module wizard onboarding
+    │   │   └── pages/
+    │   │       └── OnboardingPage.jsx  # Wizard 3 langkah (negara, level, sukses)
+    │   │
+    │   └── dashboard/                  # Modul halaman utama
+    │       ├── dashboardService.js     # Axios call ke GET /api/dashboard/
+    │       ├── dashboard.module.css    # CSS Module halaman dashboard
     │       └── pages/
-    │           ├── RegisterPage.jsx # Halaman daftar (split layout)
-    │           └── LoginPage.jsx    # Halaman masuk (split layout)
+    │           └── DashboardPage.jsx   # Dashboard (sidebar, XP, skill, streak, topik)
     │
-    ├── shared/                      # Kode yang dipakai oleh semua modul
-    │   ├── http.js                  # Axios instance + interceptor JWT
-    │   ├── storage.js               # Helper baca/tulis token di localStorage
+    ├── shared/                         # Kode yang dipakai oleh semua modul
+    │   ├── http.js                     # Axios instance + interceptor JWT
+    │   ├── storage.js                  # Helper baca/tulis token di localStorage
     │   └── styles/
-    │       └── auth.module.css      # CSS module untuk halaman auth
+    │       ├── global.css              # CSS global (font body)
+    │       └── notFound.module.css     # CSS Module halaman 404
     │
-    └── routes/                      # Konfigurasi routing
-        ├── AppRoutes.jsx            # Semua definisi route
-        ├── PrivateRoute.jsx         # Guard: cek autentikasi + onboarding
-        └── PublicRoute.jsx          # Guard: redirect jika sudah login
+    └── routes/                         # Konfigurasi routing
+        ├── AppRoutes.jsx               # Semua definisi route
+        ├── PrivateRoute.jsx            # Guard: cek autentikasi + onboarding
+        └── PublicRoute.jsx             # Guard: redirect jika sudah login
 ```
 
 ---
@@ -82,20 +97,20 @@ frontend/
 Kode diorganisir berdasarkan **fitur/modul**, bukan berdasarkan jenis file. Semua yang berkaitan dengan satu fitur ada di satu folder.
 
 ```
-modules/auth/        ← semua kode auth di sini
-  authService.js     ← layer data: HTTP calls
-  authStore.js       ← layer state: Zustand
-  components/        ← layer UI: form & komponen
-  pages/             ← layer UI: halaman lengkap
+modules/auth/           ← semua kode auth di sini
+  authService.js        ← layer data: HTTP calls
+  authStore.js          ← layer state: Zustand
+  components/           ← layer UI: form & komponen
+  pages/                ← layer UI: halaman lengkap
 ```
 
 ### Tiga lapisan dalam setiap modul
 
 | Layer | File | Tanggung Jawab |
 |---|---|---|
-| **Data** | `authService.js` | Hanya kirim/terima data dari API. Tidak tahu soal state atau UI. |
-| **State** | `authStore.js` | Simpan state global, jalankan business logic. Panggil service, update state. |
-| **UI** | `components/`, `pages/` | Tampilkan data dari store, kirim aksi ke store. Tidak panggil API langsung. |
+| **Data** | `*Service.js` | Hanya kirim/terima data dari API. Tidak tahu soal state atau UI. |
+| **State** | `*Store.js` | Simpan state global, jalankan business logic. Panggil service, update state. |
+| **UI** | `components/`, `pages/` | Tampilkan data dari store/service, tidak panggil API langsung. |
 
 ### Kode bersama (shared/)
 
@@ -105,7 +120,8 @@ Kode yang dipakai oleh semua modul masuk ke `shared/`:
 |---|---|
 | `shared/http.js` | Axios instance — **infrastruktur HTTP** (interceptor, token attach) |
 | `shared/storage.js` | localStorage helper — **penyimpanan token** |
-| `shared/styles/` | CSS module — **styling bersama** |
+| `shared/styles/global.css` | CSS global — **font body aplikasi** |
+| `shared/styles/notFound.module.css` | CSS Module — **halaman 404** |
 
 ### Kenapa arsitektur ini?
 
@@ -205,6 +221,7 @@ import axiosInstance from '../../shared/http';
 
 Entry point aplikasi. Tugas utama:
 - Import Bootstrap CSS dan Bootstrap Icons secara global
+- Import `shared/styles/global.css` untuk font `Sora` pada `body`
 - Sediakan `<BrowserRouter>` untuk React Router
 - Panggil `initAuth()` satu kali saat app pertama dibuka (cek token di localStorage)
 - Render `<App>` di dalam `<StrictMode>`
@@ -228,7 +245,7 @@ Helper murni untuk baca/tulis localStorage. Tidak ada logika bisnis di sini.
 | `saveTokens(access, refresh)` | Simpan kedua token setelah login/register |
 | `getAccessToken()` | Ambil access token (dipakai di interceptor) |
 | `getRefreshToken()` | Ambil refresh token (dipakai saat 401) |
-| `saveUser(user)` | Simpan object user (setelah login/register) |
+| `saveUser(user)` | Simpan object user (setelah login/register/onboarding) |
 | `getUser()` | Ambil object user (dipakai di `initAuth`) |
 | `clearTokens()` | Hapus semua data (dipakai saat logout) |
 
@@ -237,7 +254,7 @@ Helper murni untuk baca/tulis localStorage. Tidak ada logika bisnis di sini.
 - `bahasaku_refresh` — JWT refresh token
 - `bahasaku_user` — data user (JSON)
 
-> **Catatan P2:** Untuk keamanan lebih baik, ganti penyimpanan ke httpOnly cookie sehingga JavaScript tidak bisa membaca token secara langsung.
+> **Catatan:** Untuk keamanan lebih baik, ganti penyimpanan ke httpOnly cookie sehingga JavaScript tidak bisa membaca token secara langsung.
 
 ---
 
@@ -264,6 +281,18 @@ Response 401 masuk
 
 ---
 
+### `src/shared/styles/global.css`
+
+CSS global yang diimport di `main.jsx`. Saat ini hanya menetapkan font `Sora` untuk seluruh `body`. Tambahkan style global lain di sini jika diperlukan.
+
+---
+
+### `src/shared/styles/notFound.module.css`
+
+CSS Module untuk halaman 404 yang dirender oleh rute `*` di `AppRoutes.jsx`.
+
+---
+
 ### `src/modules/auth/authService.js`
 
 Daftar semua endpoint auth. File ini hanya berisi axios calls — tidak ada logika, tidak ada state.
@@ -279,7 +308,7 @@ Daftar semua endpoint auth. File ini hanya berisi axios calls — tidak ada logi
 
 ### `src/modules/auth/authStore.js`
 
-Otak dari fitur auth. Dibangun dengan Zustand.
+Otak dari fitur auth dan onboarding. Dibangun dengan Zustand.
 
 **State:**
 
@@ -298,12 +327,33 @@ Otak dari fitur auth. Dibangun dengan Zustand.
 | `registerUser(data)` | Panggil API register, simpan token & user, update state. |
 | `loginUser(data)` | Panggil API login, simpan token & user, update state. |
 | `logoutUser()` | Panggil API logout, hapus token, reset semua state ke awal. |
+| `onboardUser(data)` | Kirim `country` + `initial_level` ke API, update `user` di state & storage. |
 | `clearError()` | Reset `error` ke null (dipanggil saat user mulai mengetik). |
 
 **Fungsi internal `parseDrfError`** — Django REST Framework bisa mengembalikan error dalam berbagai format. Fungsi ini menormalisasi semuanya jadi satu string pesan:
 - `{ detail: "..." }` → diambil langsung
 - `{ email: ["error"], password: ["error"] }` → digabung jadi satu string
 - Network error → pakai pesan fallback
+
+---
+
+### `src/modules/auth/auth.module.css`
+
+CSS Module untuk styling halaman Register dan Login. Colocated di dalam modul `auth/` agar mudah ditemukan.
+
+**Class-class penting:**
+
+| Class | Kegunaan |
+|---|---|
+| `.authWrapper` | Container utama, `min-height: 100vh`, flex row |
+| `.brandPanel` | Panel kiri, background gradient #124663 |
+| `.formPanel` | Panel kanan, background putih/abu |
+| `.formContainer` | Card form, max-width 440px, border-radius 16px |
+| `.inputField` | Styling input (border, focus ring biru) |
+| `.inputField.isInvalid` | Border merah saat validasi gagal |
+| `.submitBtn` | Tombol submit, background #124663 |
+| `.alertError` | Alert merah untuk error dari API |
+| `.togglePassword` | Tombol show/hide password |
 
 ---
 
@@ -322,7 +372,7 @@ User klik "Daftar" → handleSubmit:
 ```
 
 **Validasi yang dilakukan:**
-- `first_name` & `last_name` — wajib diisi
+- `name` — wajib diisi
 - `email` — wajib + format email valid
 - `password` — wajib + minimal 8 karakter
 - `password_confirm` — wajib + harus sama dengan `password`
@@ -364,23 +414,134 @@ Di mobile (<768px): panel kiri tersembunyi, hero biru muncul di atas form.
 
 ---
 
-### `src/shared/styles/auth.module.css`
+### `src/modules/onboarding/onboardingService.js`
 
-CSS Module untuk styling halaman Register dan Login. Menggunakan CSS Modules (bukan global CSS) agar class tidak bentrok dengan komponen lain.
+Service layer onboarding. Satu baris — hanya kirim data ke API.
 
-**Class-class penting:**
+| Fungsi | Method | Endpoint |
+|---|---|---|
+| `onboard(data)` | POST | `/api/user/onboarding/` |
+
+`data` berisi `{ country, initial_level }`. `initial_level` hanya menerima `"A1"` atau `"A2"` sesuai API spec.
+
+---
+
+### `src/modules/onboarding/pages/OnboardingPage.jsx`
+
+Wizard 3 langkah pengisian profil pertama. Dipanggil sekali setelah register selesai.
+
+**Struktur komponen (semua dalam satu file):**
+
+| Komponen | Peran |
+|---|---|
+| `OnboardingLayout` | Wrapper layout: header desktop (brand + StepBar) + card (mobileTop + stepIcon + children) |
+| `StepBar` | Indikator langkah berupa circles + lines — hanya tampil di desktop |
+| `StepDots` | Indikator langkah berupa pill dots — hanya tampil di mobile |
+
+**Alur wizard:**
+
+```
+Step 1 — Greeting
+  → tampilkan nama dari authStore.user.name
+  → tombol Lanjut
+
+Step 2 — Pilih Negara
+  → grid 8 negara + search filter
+  → tombol Kembali / Lanjut (disabled jika belum pilih)
+
+Step 3 — Pilih Level
+  → dua pilihan: A1 (Pemula) atau A2 (Dasar)
+  → tombol Kembali / Mulai Belajar
+  → klik → onboardUser({ country, initial_level }) dari authStore
+  → berhasil → Step 4 (sukses)
+
+Step 4 — Sukses
+  → tampilkan ringkasan: nama, negara, level
+  → tombol navigasi ke /dashboard
+```
+
+**Kenapa hanya A1 dan A2?** — API spec (`/api/user/onboarding/`) hanya menerima nilai `"A1"` atau `"A2"` untuk `initial_level`. Level lanjutan (B1/B2/C1/C2) tidak tersedia saat onboarding.
+
+---
+
+### `src/modules/onboarding/onboarding.module.css`
+
+CSS Module untuk wizard onboarding. Mendukung tampilan desktop dan mobile dalam satu file.
+
+**Responsive strategy:**
+- Desktop: `.header` (brand + StepBar circles) di atas card, `.mobileTop` dan `.stepIcon` disembunyikan
+- Mobile (`≤767px`): `.header` disembunyikan, card melebar full-screen, `.mobileTop` (brand + StepDots) dan `.stepIcon` tampil di dalam card
+- Nav tombol didorong ke bawah dengan `margin-top: auto` di flex column card
+
+---
+
+### `src/modules/dashboard/dashboardService.js`
+
+Service layer dashboard. Satu baris — fetch semua data dashboard dari satu endpoint.
+
+| Fungsi | Method | Endpoint |
+|---|---|---|
+| `getDashboard()` | GET | `/api/dashboard/` |
+
+Token JWT otomatis dilampirkan oleh interceptor di `shared/http.js`.
+
+---
+
+### `src/modules/dashboard/pages/DashboardPage.jsx`
+
+Halaman utama setelah onboarding selesai. Mengonsumsi seluruh data dari `GET /api/dashboard/`.
+
+**Struktur komponen (semua dalam satu file):**
+
+| Konstanta/Helper | Peran |
+|---|---|
+| `SKILL_LABELS` | Map skill enum API (`kosakata/grammar/menyimak`) ke label Indonesia |
+| `SKILL_COLOR` | Map skill ke CSS class warna (dot & progress bar) |
+| `TOPIC_BG` | Map skill ke CSS class background icon topik rekomendasi |
+| `TOPIC_ICON` | Map skill ke emoji icon |
+| `NAV_ITEMS` | Array data sidebar nav (to, label, SVG icon) |
+| `getGreeting()` | Sapa berdasarkan jam lokal: pagi/siang/sore/malam |
+| `getInitials(name)` | Ambil 2 huruf pertama nama untuk avatar sidebar |
+| `skillSubText(s)` | Tampilkan delta minggu ini atau status skill |
+
+**Sections yang dirender:**
+
+```
+Sidebar
+  ├─ Brand (logo + nama)
+  ├─ Nav (NavLink — aktif otomatis by React Router)
+  └─ User info (avatar initials, nama, level) + tombol Keluar
+
+Main
+  ├─ Topbar: greeting h1 + tanggal/topik baru + streak pill
+  ├─ XP Card: level CEFR, progress bar XP, total XP circle
+  ├─ Skills Grid: 3 card (kosakata, grammar, menyimak) + skor + bar + delta
+  ├─ Streak Card: 7 hari terakhir (done/today/empty)
+  └─ Bottom 2-col:
+       ├─ Rekomendasi Topik: daftar topik dari algoritma adaptif
+       └─ Ringkasan Aktivitas: sesi, soal, rata-rata skor, CEFR, skill terkuat, XP hari ini
+```
+
+**Loading & Error state:**
+- Saat fetch berlangsung → full-screen "Memuat..."
+- Jika fetch gagal → full-screen pesan error
+
+**Logout:** Tombol "Keluar" di sidebar memanggil `logoutUser()` dari authStore. State `isAuthenticated` berubah ke `false`, PrivateRoute otomatis redirect ke `/login`.
+
+---
+
+### `src/modules/dashboard/dashboard.module.css`
+
+CSS Module untuk halaman dashboard. Semua style colocated, tidak ada inline CSS di JSX kecuali nilai dinamis dari API (lebar XP bar dan skill bar dalam persen).
+
+**Class helper tambahan:**
 
 | Class | Kegunaan |
 |---|---|
-| `.authWrapper` | Container utama, `min-height: 100vh`, flex row |
-| `.brandPanel` | Panel kiri, background gradient #124663 |
-| `.formPanel` | Panel kanan, background putih/abu |
-| `.formContainer` | Card form, max-width 440px, border-radius 16px |
-| `.inputField` | Styling input (border, focus ring biru) |
-| `.inputField.isInvalid` | Border merah saat validasi gagal |
-| `.submitBtn` | Tombol submit, background #124663 |
-| `.alertError` | Alert merah untuk error dari API |
-| `.togglePassword` | Tombol show/hide password |
+| `.skillKosakata/Grammar/Menyimak` | Warna background dot & progress bar per skill |
+| `.topicBgKosakata/Grammar/Menyimak` | Warna background icon topik rekomendasi |
+| `.sdayDone / .sdayToday / .sdayEmpty` | State hari di streak card |
+| `.badgeBlue / .badgeGreen` | Badge CEFR dan skill terkuat di ringkasan aktivitas |
 
 ---
 
@@ -418,8 +579,8 @@ Pusat konfigurasi semua route. Peta route saat ini:
 |---|---|---|
 | `/register` | PublicRoute | RegisterPage |
 | `/login` | PublicRoute | LoginPage |
-| `/onboarding` | PrivateRoute | OnboardingPage (placeholder) |
-| `/dashboard` | PrivateRoute | DashboardPage (placeholder) |
+| `/onboarding` | PrivateRoute | OnboardingPage |
+| `/dashboard` | PrivateRoute | DashboardPage |
 | `/topics` | PrivateRoute | TopicsPage (placeholder) |
 | `/admin` | PrivateRoute | AdminPage (placeholder) |
 | `/` | — | Redirect ke /dashboard |
@@ -454,10 +615,55 @@ authStore: set({ user, isAuthenticated: true })
 LoginForm: navigate('/dashboard' | '/onboarding' | '/admin')
 ```
 
+### Alur Onboarding
+
+```
+OnboardingPage
+  │  user selesai step 3 (pilih level), klik "Mulai Belajar"
+  ▼
+authStore.onboardUser({ country, initial_level })
+  │  panggil
+  ▼
+onboardingService.onboard({ country, initial_level })
+  │  via
+  ▼
+http.js.post('/api/user/onboarding/')
+  │  response: { message, user }   ← user.is_onboarded sekarang true
+  ▼
+storage.saveUser(user)
+  │
+  ▼
+authStore: set({ user })          ← is_onboarded: true disimpan di state
+  │
+  ▼
+OnboardingPage: setStep(4)        ← tampilkan halaman sukses
+  │  user klik "Mulai Latihan Pertama"
+  ▼
+navigate('/dashboard')
+```
+
+### Alur Dashboard
+
+```
+DashboardPage mount
+  │  useEffect dipanggil
+  ▼
+dashboardService.getDashboard()
+  │  via
+  ▼
+http.js.get('/api/dashboard/')    ← token JWT otomatis terlampir
+  │  response: DashboardResponse
+  ▼
+setData(res.data)                 ← state lokal, tidak perlu global store
+  │
+  ▼
+Render: greeting, level, streak, skills, recommended_topics, activity_summary
+```
+
 ### Alur Auto-Refresh Token
 
 ```
-http.js request (misal GET /api/topics/)
+http.js request (misal GET /api/dashboard/)
   │  response: 401 Unauthorized
   ▼
 Response Interceptor
@@ -485,7 +691,9 @@ AppRoutes render
   ▼
 PrivateRoute cek isAuthenticated
   ├─ false → redirect /login
-  └─ true  → render DashboardPage
+  └─ true  → cek is_onboarded
+                ├─ false → redirect /onboarding
+                └─ true  → render DashboardPage
 ```
 
 ---
@@ -504,13 +712,13 @@ Restart dev server setelah mengganti env variable.
 
 ### Ganti Warna Primary
 
-Cari dan ganti `#124663` di file `src/shared/styles/auth.module.css`. Warna ini dipakai untuk background panel kiri, tombol submit, focus ring, dan link.
+Cari dan ganti `#124663` di file-file CSS Module masing-masing modul. Warna ini dipakai secara konsisten di semua modul (auth, onboarding, dashboard).
 
 ---
 
 ### Ubah Validasi Form Register
 
-Edit fungsi `validate()` di `src/modules/auth/components/RegisterForm.jsx` (baris 24–51).
+Edit fungsi `validate()` di `src/modules/auth/components/RegisterForm.jsx`.
 
 Contoh: menambahkan validasi password harus mengandung angka:
 ```js
@@ -531,13 +739,43 @@ Edit komponen `BrandPanel` di dalam:
 
 ### Ubah Redirect Setelah Login
 
-Edit fungsi `getRedirectPath` di `src/modules/auth/components/LoginForm.jsx` (baris 35–39):
+Edit fungsi `getRedirectPath` di `src/modules/auth/components/LoginForm.jsx`:
 
 ```js
 const getRedirectPath = (user) => {
   if (!user.is_onboarded) return '/onboarding';
   if (user.role === 'admin') return '/admin';
   return '/dashboard'; // ← ubah default redirect di sini
+};
+```
+
+---
+
+### Tambah Negara di Onboarding
+
+Edit konstanta `COUNTRIES` di `src/modules/onboarding/pages/OnboardingPage.jsx`:
+
+```js
+const COUNTRIES = [
+  { flag: '🇮🇩', name: 'Indonesia' },
+  // tambahkan di sini
+  { flag: '🇯🇵', name: 'Jepang' },
+];
+```
+
+---
+
+### Ubah Sapaan Waktu di Dashboard
+
+Edit fungsi `getGreeting` di `src/modules/dashboard/pages/DashboardPage.jsx`:
+
+```js
+const getGreeting = () => {
+  const h = new Date().getHours();
+  if (h < 12) return 'Selamat pagi';   // ← ubah teks di sini
+  if (h < 15) return 'Selamat siang';
+  if (h < 18) return 'Selamat sore';
+  return 'Selamat malam';
 };
 ```
 
@@ -573,6 +811,9 @@ const message = parseDrfError(err, 'Teks error register di sini.');
 
 // untuk login
 const message = parseDrfError(err, 'Teks error login di sini.');
+
+// untuk onboarding
+const message = parseDrfError(err, 'Teks error onboarding di sini.');
 ```
 
 ---
@@ -582,7 +823,7 @@ const message = parseDrfError(err, 'Teks error login di sini.');
 1. Tambahkan key di `INITIAL_FORM` (`RegisterForm.jsx`)
 2. Tambahkan validasi di fungsi `validate()`
 3. Tambahkan elemen `<input>` di JSX
-4. Pastikan field dikirim ke API (tidak masuk daftar destructuring yang dibuang)
+4. Pastikan field dikirim ke API
 
 ---
 
@@ -644,15 +885,24 @@ set({ user: userData, isAuthenticated: true, isLoading: false });
 
 ---
 
+### Error: Dashboard menampilkan "Gagal memuat dashboard"
+
+**Penyebab:** Request ke `GET /api/dashboard/` gagal (token expired, server down, atau onboarding belum selesai).
+
+**Pengecekan:**
+1. Buka DevTools → Network → lihat request ke `/api/dashboard/`
+2. Status 401 → token bermasalah, coba logout dan login ulang
+3. Status 400 → user belum onboarding, pastikan `is_onboarded: true` di localStorage
+
+---
+
 ### Error: Halaman tidak ditemukan / 404 saat refresh di browser
 
-**Penyebab:** Server tidak tahu cara handle client-side routing — mengembalikan 404 untuk path selain `/`.
+**Penyebab:** Server tidak tahu cara handle client-side routing.
 
 **Solusi untuk development:** Sudah ditangani otomatis oleh Vite dev server.
 
-**Solusi untuk production (Vercel):** File `vercel.json` sudah ada di root project, berisi rewrite rule yang diperlukan.
-
-**Solusi untuk server lain (Nginx):**
+**Solusi untuk production (Nginx):**
 ```nginx
 location / {
   try_files $uri $uri/ /index.html;
@@ -674,7 +924,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 
 ### Warning di console: `Can't perform a React state update on an unmounted component`
 
-**Penyebab:** Komponen di-unmount sebelum async operation selesai.
+**Penyebab:** Komponen di-unmount sebelum async operation selesai (misal navigasi cepat keluar dari dashboard).
 
 **Solusi sementara:** Ini warning umum di React dan tidak menyebabkan bug di production. Solusi proper menggunakan `AbortController` akan ditambahkan di iterasi berikutnya.
 
@@ -689,9 +939,7 @@ Contoh: menambahkan fitur **Materi** (`/topics`).
 ```
 src/modules/topics/
 ├── topicsService.js    ← axios calls ke /api/topics/
-├── topicsStore.js      ← Zustand store
-├── components/
-│   └── TopicList.jsx   ← komponen UI
+├── topics.module.css   ← CSS Module (opsional jika ada halaman custom)
 └── pages/
     └── TopicsPage.jsx  ← halaman lengkap
 ```
@@ -699,33 +947,36 @@ src/modules/topics/
 ### 2. Buat file service (`topicsService.js`)
 
 ```js
-import axiosInstance from '@/shared/http';
+import axiosInstance from '../../shared/http';
 
 export const getTopics = () => axiosInstance.get('/api/topics/');
 export const getTopic  = (id) => axiosInstance.get(`/api/topics/${id}/`);
 ```
 
-### 3. Buat Zustand store (`topicsStore.js`)
+### 3. Buat halaman (`pages/TopicsPage.jsx`)
 
-Ikuti pola yang sama dengan `authStore.js`: state + actions dalam satu `create()`.
-
-### 4. Buat halaman (`pages/TopicsPage.jsx`)
-
-Import komponen dari folder yang sama dan susun layout.
+Fetch data langsung di komponen menggunakan `useEffect` (seperti DashboardPage), atau buat Zustand store terpisah jika state perlu dibagi antar halaman.
 
 ```jsx
-import TopicList from '../components/TopicList';
+import { useState, useEffect } from 'react';
+import { getTopics } from '../topicsService';
 
 export default function TopicsPage() {
+  const [topics, setTopics] = useState([]);
+
+  useEffect(() => {
+    getTopics().then(res => setTopics(res.data));
+  }, []);
+
   return (
     <div>
-      <TopicList />
+      {topics.map(t => <div key={t.id}>{t.name}</div>)}
     </div>
   );
 }
 ```
 
-### 5. Daftarkan route
+### 4. Daftarkan route
 
 Edit `src/routes/AppRoutes.jsx`:
 ```jsx
@@ -755,23 +1006,25 @@ import TopicsPage from '../modules/topics/pages/TopicsPage';
 
 ## Model Data User
 
+Sesuai OpenAPI spec (`UserObject`):
+
 ```json
 {
-  "id": "uuid",
-  "first_name": "string",
-  "last_name": "string",
-  "email": "string",
-  "role": "user | admin",
-  "level": "A1 | A2 | B1 | B2 | C1 | C2",
-  "xp": 0,
-  "streak": 0,
-  "is_onboarded": false
+  "id": 1,
+  "name": "Ahmad Khalid",
+  "email": "ahmad@uiii.ac.id",
+  "role": "user | instructor | admin",
+  "is_onboarded": false,
+  "country": "Saudi Arabia",
+  "initial_level": "A1 | A2"
 }
 ```
 
 Field yang paling krusial untuk logika routing:
 - `is_onboarded` — menentukan apakah user diarahkan ke `/onboarding` setelah login
 - `role` — menentukan apakah user diarahkan ke `/admin` atau `/dashboard`
+
+Data XP, streak, dan skill score tidak disimpan di object user — semuanya dikembalikan oleh endpoint `GET /api/dashboard/` setiap kali halaman dashboard dibuka.
 
 ---
 
@@ -793,8 +1046,8 @@ Migrasi ke Modular Layered dengan perubahan berikut:
 
 | Sebelum (FSD) | Sesudah (Modular Layered) | Alasan |
 |---|---|---|
-| `src/features/auth/api/authApi.js` | `src/modules/auth/authService.js` | Nama `authService` lebih deskriptif, tidak ada konflik nama `api/` |
-| `src/features/auth/store/authStore.js` | `src/modules/auth/authStore.js` | Satu level lebih datar, lebih mudah ditemukan |
+| `src/features/auth/api/authApi.js` | `src/modules/auth/authService.js` | Nama `authService` lebih deskriptif |
+| `src/features/auth/store/authStore.js` | `src/modules/auth/authStore.js` | Lebih datar, lebih mudah ditemukan |
 | `src/features/auth/components/` | `src/modules/auth/components/` | Semua auth di satu tempat |
 | `src/pages/LoginPage.jsx` | `src/modules/auth/pages/LoginPage.jsx` | Halaman dan komponen satu modul tidak terpisah |
 | `src/shared/api/axiosInstance.js` | `src/shared/http.js` | Tidak ada lagi dua folder `api/`, nama jelas |
@@ -803,6 +1056,19 @@ Migrasi ke Modular Layered dengan perubahan berikut:
 | `src/routes/guards/PrivateRoute.jsx` | `src/routes/PrivateRoute.jsx` | Hapus subfolder untuk 2 file |
 | `src/features/auth/index.js` | Dihapus | Barrel export tidak wajib, import langsung natural |
 
+### Iterasi 2 — Onboarding & Dashboard
+
+Penambahan dua modul baru mengikuti pola yang sama:
+
+| Perubahan | Keterangan |
+|---|---|
+| `src/modules/auth/auth.module.css` | CSS Module auth dipindah dari `shared/styles/` ke dalam modul auth (colocated) |
+| `src/shared/styles/global.css` | Ditambahkan untuk font body global, diimport di `main.jsx` |
+| `src/shared/styles/notFound.module.css` | Ditambahkan untuk halaman 404 |
+| `src/modules/onboarding/` | Modul baru: wizard 3 langkah pengisian profil awal |
+| `src/modules/dashboard/` | Modul baru: halaman utama dengan sidebar, XP, skill, streak, dan topik |
+| `authStore.onboardUser` | Action baru ditambahkan di authStore untuk submit data onboarding |
+
 ---
 
-*Iterasi 1 — Auth (Register & Login) selesai. Iterasi berikutnya: Onboarding, Dashboard, Materi.*
+*Iterasi 2 — Onboarding & Dashboard selesai. Iterasi berikutnya: Topics, History, Progress, Profile, Admin.*

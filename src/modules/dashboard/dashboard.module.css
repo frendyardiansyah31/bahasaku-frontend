@@ -1,0 +1,564 @@
+/* ============================================================
+   dashboard.module.css — Styles halaman dashboard BahasaKu
+   ============================================================ */
+
+/* ── Layout ──────────────────────────────────────────────── */
+.root {
+  min-height: 100vh;
+  background: #f7f8fa;
+  display: flex;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: #124663;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebarBrand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 22px 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 16px;
+}
+
+.logo {
+  width: 34px;
+  height: 34px;
+  background: #fff;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #124663;
+  flex-shrink: 0;
+}
+
+.brandName {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+
+/* Nav items — also used as NavLink (renders as <a>) */
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 22px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+  text-decoration: none;
+  font-family: 'Sora', sans-serif;
+}
+
+.navItem:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.navActive {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border-left-color: #fff;
+}
+
+.navIcon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+/* Sidebar bottom: user info + logout */
+.sidebarBottom {
+  margin-top: auto;
+  padding: 16px 22px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.userRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.userName {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.userLevel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.logoutBtn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.logoutBtn:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ── Main content ─────────────────────────────────────────── */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 32px 40px;
+}
+
+/* ── Topbar ───────────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.greeting h1 {
+  font-size: 21px;
+  font-weight: 700;
+  color: #111;
+  letter-spacing: -0.4px;
+}
+
+.greeting p {
+  font-size: 13px;
+  color: #999;
+  margin-top: 3px;
+}
+
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.streakPill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #111;
+}
+
+.streakFire {
+  font-size: 15px;
+}
+
+/* ── XP Card ──────────────────────────────────────────────── */
+.xpCard {
+  background: #124663;
+  border-radius: 18px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.xpCard::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.xpLeft {
+  flex: 1;
+}
+
+.xpLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+
+.xpLevel {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+
+.xpSub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 16px;
+}
+
+.xpBarWrap {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 99px;
+  height: 7px;
+  width: 100%;
+}
+
+.xpBarFill {
+  background: #fff;
+  border-radius: 99px;
+  height: 7px;
+}
+
+.xpBarLabel {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.xpBarLabel span {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.xpRight {
+  text-align: center;
+}
+
+.xpCircle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.xpNum {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.xpXp {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Skills Grid ──────────────────────────────────────────── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.statCard {
+  background: #fff;
+  border-radius: 14px;
+  border: 0.5px solid #e5e7eb;
+  padding: 18px 20px;
+}
+
+.statCardLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #999;
+  letter-spacing: 0.4px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.statDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.statScore {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 6px;
+}
+
+.statBarWrap {
+  background: #f0f0f0;
+  border-radius: 99px;
+  height: 5px;
+}
+
+.statBar {
+  border-radius: 99px;
+  height: 5px;
+}
+
+.statSub {
+  font-size: 11px;
+  color: #bbb;
+  margin-top: 5px;
+}
+
+/* Skill-specific colors (dot + bar) */
+.skillKosakata { background: #124663; }
+.skillGrammar   { background: #1a7a4a; }
+.skillMenyimak  { background: #b45309; }
+
+/* ── Streak Card ──────────────────────────────────────────── */
+.streakCard {
+  background: #fff;
+  border-radius: 14px;
+  border: 0.5px solid #e5e7eb;
+  padding: 20px 22px;
+  margin-bottom: 20px;
+}
+
+.streakCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.streakCardTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111;
+}
+
+.streakCardSub {
+  font-size: 12px;
+  color: #bbb;
+}
+
+.streakRow {
+  display: flex;
+  gap: 8px;
+}
+
+.sday {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.sdayLabel {
+  font-size: 10px;
+  color: #bbb;
+  font-weight: 500;
+}
+
+.sdayDot {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.sdayDone  { background: #124663; }
+.sdayToday { background: #124663; outline: 3px solid rgba(18, 70, 99, 0.2); outline-offset: 2px; }
+.sdayEmpty { width: 32px; height: 32px; border-radius: 9px; background: #f0f0f0; }
+
+.check {
+  color: #fff;
+  font-size: 14px;
+}
+
+/* ── Bottom 2-col ─────────────────────────────────────────── */
+.bottomGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Recommended Topics ───────────────────────────────────── */
+.rekomCard {
+  background: #fff;
+  border-radius: 14px;
+  border: 0.5px solid #e5e7eb;
+  padding: 20px 22px;
+}
+
+.rekomTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 14px;
+}
+
+.rekomItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 0.5px solid #f0f0f0;
+  cursor: pointer;
+}
+
+.rekomItem:last-child {
+  border-bottom: none;
+}
+
+.rekomIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.rekomInfo {
+  flex: 1;
+}
+
+.rekomName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+}
+
+.rekomMeta {
+  font-size: 11px;
+  color: #bbb;
+  margin-top: 1px;
+}
+
+.rekomArrow {
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* Topic icon background colors */
+.topicBgKosakata { background: #eef4f7; }
+.topicBgGrammar  { background: #eaf7f0; }
+.topicBgMenyimak { background: #fef3e8; }
+
+/* ── Activity Summary ─────────────────────────────────────── */
+.quickCard {
+  background: #fff;
+  border-radius: 14px;
+  border: 0.5px solid #e5e7eb;
+  padding: 20px 22px;
+}
+
+.quickTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 14px;
+}
+
+.quickItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 0.5px solid #f0f0f0;
+}
+
+.quickItem:last-child {
+  border-bottom: none;
+}
+
+.quickKey {
+  font-size: 12px;
+  color: #888;
+}
+
+.quickVal {
+  font-size: 12px;
+  font-weight: 700;
+  color: #111;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+
+.badgeBlue  { background: #eef4f7; color: #124663; }
+.badgeGreen { background: #eaf7f0; color: #1a7a4a; }
+
+/* ── Loading / Error ──────────────────────────────────────── */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 14px;
+  color: #999;
+}
+
+.errorBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 14px;
+  color: #dc2626;
+  text-align: center;
+  padding: 24px;
+}

@@ -14,12 +14,10 @@ import PrivateRoute from './PrivateRoute';
 import notFoundStyles from '../shared/styles/notFound.module.css';
 
 // Pages — import lazy jika ingin code splitting
-import RegisterPage  from '../modules/auth/pages/RegisterPage';
-import LoginPage     from '../modules/auth/pages/LoginPage';
+import RegisterPage   from '../modules/auth/pages/RegisterPage';
+import LoginPage      from '../modules/auth/pages/LoginPage';
 import OnboardingPage from '../modules/onboarding/pages/OnboardingPage';
-
-// ── Placeholder pages (implementasi di iterasi berikutnya) ─────────────────
-const DashboardPage  = () => <div className="p-4"><h1>Dashboard</h1><p>Selamat datang!</p></div>;
+import DashboardPage  from '../modules/dashboard/pages/DashboardPage';
 const TopicsPage     = () => <div className="p-4"><h1>Topik</h1></div>;
 const AdminPage      = () => <div className="p-4"><h1>Admin Panel</h1></div>;
 const NotFoundPage   = () => (
