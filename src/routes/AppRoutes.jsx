@@ -18,8 +18,9 @@ import RegisterPage   from '../modules/auth/pages/RegisterPage';
 import LoginPage      from '../modules/auth/pages/LoginPage';
 import OnboardingPage from '../modules/onboarding/pages/OnboardingPage';
 import DashboardPage  from '../modules/dashboard/pages/DashboardPage';
+import TopicsPage     from '../modules/topics/pages/TopicsPage';
 import QuizPage       from '../modules/quiz/pages/QuizPage';
-const TopicsPage     = () => <div className="p-4"><h1>Topik</h1></div>;
+const QuizIndexPage  = () => <div className="p-4"><h1>Latihan Soal</h1></div>;
 const AdminPage      = () => <div className="p-4"><h1>Admin Panel</h1></div>;
 const NotFoundPage   = () => (
   <div className={notFoundStyles.wrapper}>
@@ -65,6 +66,14 @@ export default function AppRoutes() {
         element={
           <PrivateRoute>
             <DashboardPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/quiz"
+        element={
+          <PrivateRoute>
+            <QuizIndexPage />
           </PrivateRoute>
         }
       />

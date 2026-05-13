@@ -1,33 +1,37 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import Sidebar from '../../../shared/components/Sidebar';
-import { startSession, submitAnswer, finishSession } from '../quizService';
-import styles from '../quiz.module.css';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import Sidebar from "../../../shared/components/Sidebar";
+import { startSession, submitAnswer, finishSession } from "../quizService";
+import styles from "../quiz.module.css";
 
 // ─── Konstanta ────────────────────────────────────────────────────────────────
 
-const SKILL_LABELS = { kosakata: 'Kosakata', grammar: 'Grammar', menyimak: 'Menyimak' };
+const SKILL_LABELS = {
+  kosakata: "Kosakata",
+  grammar: "Grammar",
+  menyimak: "Menyimak",
+};
 
 // ─── Halaman Quiz ─────────────────────────────────────────────────────────────
 
 export default function QuizPage() {
   const { topicId } = useParams();
-  const navigate    = useNavigate();
+  const navigate = useNavigate();
 
   // ── Session state ──────────────────────────────────────────────────────────
-  const [phase, setPhase]               = useState('loading'); // loading|quiz|finishing|done|error
-  const [session, setSession]           = useState(null);
-  const [currentIdx, setCurrentIdx]     = useState(0);
+  const [phase, setPhase] = useState("loading"); // loading|quiz|finishing|done|error
+  const [session, setSession] = useState(null);
+  const [currentIdx, setCurrentIdx] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [answerResult, setAnswerResult] = useState(null);
-  const [submitting, setSubmitting]     = useState(false);
-  const [result, setResult]             = useState(null); // FinishSessionResponse
+  const [submitting, setSubmitting] = useState(false);
+  const [result, setResult] = useState(null); // FinishSessionResponse
 
   // ── Per-question answer input state ───────────────────────────────────────
-  const [selectedKey, setSelectedKey]   = useState(null);   // multiple_choice
-  const [inputValue, setInputValue]     = useState('');      // fill_blank
-  const [arranged, setArranged]         = useState([]);      // drag_drop (placed words)
-  const [available, setAvailable]       = useState([]);      // drag_drop (word pool)
+  const [selectedKey, setSelectedKey] = useState(null); // multiple_choice
+  const [inputValue, setInputValue] = useState(""); // fill_blank
+  const [arranged, setArranged] = useState([]); // drag_drop (placed words)
+  const [available, setAvailable] = useState([]); // drag_drop (word pool)
 
   // ── Fetch session on mount ─────────────────────────────────────────────────
   useEffect(() => {
@@ -36,9 +40,9 @@ export default function QuizPage() {
         const data = res.data;
         setSession(data);
         resetInputFor(data.questions[0]);
-        setPhase('quiz');
+        setPhase("quiz");
       })
-      .catch(() => setPhase('error'));
+      .catch(() => setPhase("error"));
   }, [topicId]);
 
   // ── Helpers ────────────────────────────────────────────────────────────────
@@ -46,14 +50,16 @@ export default function QuizPage() {
   const resetInputFor = (q) => {
     setAnswerResult(null);
     setSelectedKey(null);
-    setInputValue('');
+    setInputValue("");
     setArranged([]);
-    setAvailable(q?.type === 'drag_drop' ? [...(q.words ?? [])] : []);
+    setAvailable(q?.type === "drag_drop" ? [...(q.words ?? [])] : []);
   };
 
-  const currentQ  = session?.questions[currentIdx];
-  const isLast    = session && currentIdx >= session.total_questions - 1;
-  const progressPct = session ? Math.round((currentIdx / session.total_questions) * 100) : 0;
+  const currentQ = session?.questions[currentIdx];
+  const isLast = session && currentIdx >= session.total_questions - 1;
+  const progressPct = session
+    ? Math.round((currentIdx / session.total_questions) * 100)
+    : 0;
 
   // ── Submit answer to API ───────────────────────────────────────────────────
 
@@ -62,7 +68,7 @@ export default function QuizPage() {
     setSubmitting(true);
     try {
       const res = await submitAnswer(topicId, {
-        session_id:  session.session_id,
+        session_id: session.session_id,
         question_id: currentQ.id,
         answer,
       });
@@ -110,13 +116,13 @@ export default function QuizPage() {
 
   const handleNext = async () => {
     if (isLast) {
-      setPhase('finishing');
+      setPhase("finishing");
       try {
         const res = await finishSession(topicId, session.session_id);
         setResult(res.data);
-        setPhase('done');
+        setPhase("done");
       } catch {
-        navigate('/dashboard');
+        navigate("/dashboard");
       }
     } else {
       const next = currentIdx + 1;
@@ -127,18 +133,27 @@ export default function QuizPage() {
 
   // ── Render states ──────────────────────────────────────────────────────────
 
-  if (phase === 'loading') return <div className={styles.loading}>Memuat soal...</div>;
-  if (phase === 'error')   return <div className={styles.errorBox}>Gagal memuat sesi. Silakan coba lagi.</div>;
+  if (phase === "loading")
+    return <div className={styles.loading}>Memuat soal...</div>;
+  if (phase === "error")
+    return (
+      <div className={styles.errorBox}>
+        Gagal memuat sesi. Silakan coba lagi.
+      </div>
+    );
 
   // Done screen
-  if (phase === 'done' && result) {
+  if (phase === "done" && result) {
     return (
       <div className={styles.root}>
         <Sidebar />
         <main className={styles.main}>
           <div className={styles.sessionHeader}>
             <div className={styles.sessionInfo}>
-              <h2>{result.topic_name} — {SKILL_LABELS[session.topic.skill] ?? session.topic.skill}</h2>
+              <h2>
+                {result.topic_name} —{" "}
+                {SKILL_LABELS[session.topic.skill] ?? session.topic.skill}
+              </h2>
               <p>{session.topic.level}</p>
             </div>
           </div>
@@ -146,17 +161,25 @@ export default function QuizPage() {
           <div className={styles.progressWrap}>
             <div className={styles.progressMeta}>
               <span className={styles.progressLabel}>Selesai!</span>
-              <span className={styles.progressCount}>{result.correct_count} benar</span>
+              <span className={styles.progressCount}>
+                {result.correct_count} benar
+              </span>
             </div>
             <div className={styles.progressTrack}>
-              <div className={styles.progressFill} style={{ width: '100%' }} />
+              <div className={styles.progressFill} style={{ width: "100%" }} />
             </div>
           </div>
 
           <div className={styles.done}>
             <div className={styles.doneIcon}>
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M6 17L12 23L26 9" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M6 17L12 23L26 9"
+                  stroke="white"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </div>
             <div className={styles.scoreBig}>{result.score_percent}%</div>
@@ -168,7 +191,10 @@ export default function QuizPage() {
               Kamu berhasil menyelesaikan latihan {result.topic_name} hari ini.
               {result.xp_gained > 0 && ` +${result.xp_gained} XP didapat.`}
             </p>
-            <button className={styles.doneBtn} onClick={() => navigate('/dashboard')}>
+            <button
+              className={styles.doneBtn}
+              onClick={() => navigate("/dashboard")}
+            >
               Kembali ke Dashboard →
             </button>
           </div>
@@ -181,32 +207,37 @@ export default function QuizPage() {
   const isAnswered = !!answerResult;
 
   const optionClass = (key) => {
-    const isSelected  = selectedKey === key;
+    const isSelected = selectedKey === key;
     const isCorrectAns = isAnswered && answerResult.correct_answer === key;
-    const isWrong     = isSelected && isAnswered && !answerResult.is_correct;
+    const isWrong = isSelected && isAnswered && !answerResult.is_correct;
 
     let cls = styles.option;
-    if (isSelected && answerResult?.is_correct) cls += ` ${styles.selectedCorrect}`;
-    else if (isWrong)                            cls += ` ${styles.selectedWrong}`;
-    else if (isCorrectAns)                       cls += ` ${styles.showCorrect}`;
-    if (isAnswered)                              cls += ` ${styles.disabled}`;
+    if (isSelected && answerResult?.is_correct)
+      cls += ` ${styles.selectedCorrect}`;
+    else if (isWrong) cls += ` ${styles.selectedWrong}`;
+    else if (isCorrectAns) cls += ` ${styles.showCorrect}`;
+    if (isAnswered) cls += ` ${styles.disabled}`;
     return cls;
   };
 
   const optKeyClass = (key) => {
-    const isSelected   = selectedKey === key;
+    const isSelected = selectedKey === key;
     const isCorrectAns = isAnswered && answerResult.correct_answer === key;
-    if ((isSelected && answerResult?.is_correct) || isCorrectAns) return styles.optKeyCorrect;
-    if (isSelected && isAnswered && !answerResult.is_correct)     return styles.optKeyWrong;
-    return '';
+    if ((isSelected && answerResult?.is_correct) || isCorrectAns)
+      return styles.optKeyCorrect;
+    if (isSelected && isAnswered && !answerResult.is_correct)
+      return styles.optKeyWrong;
+    return "";
   };
 
   const optTextClass = (key) => {
-    const isSelected   = selectedKey === key;
+    const isSelected = selectedKey === key;
     const isCorrectAns = isAnswered && answerResult.correct_answer === key;
-    if ((isSelected && answerResult?.is_correct) || isCorrectAns) return styles.optTextCorrect;
-    if (isSelected && isAnswered && !answerResult.is_correct)     return styles.optTextWrong;
-    return '';
+    if ((isSelected && answerResult?.is_correct) || isCorrectAns)
+      return styles.optTextCorrect;
+    if (isSelected && isAnswered && !answerResult.is_correct)
+      return styles.optTextWrong;
+    return "";
   };
 
   return (
@@ -217,10 +248,16 @@ export default function QuizPage() {
         {/* Session header */}
         <div className={styles.sessionHeader}>
           <div className={styles.sessionInfo}>
-            <h2>{session.topic.name} — {SKILL_LABELS[session.topic.skill] ?? session.topic.skill}</h2>
+            <h2>
+              {session.topic.name} —{" "}
+              {SKILL_LABELS[session.topic.skill] ?? session.topic.skill}
+            </h2>
             <p>Pilihan Ganda · {session.topic.level}</p>
           </div>
-          <button className={styles.exitBtn} onClick={() => navigate('/dashboard')}>
+          <button
+            className={styles.exitBtn}
+            onClick={() => navigate("/dashboard")}
+          >
             ✕ Keluar Sesi
           </button>
         </div>
@@ -234,7 +271,10 @@ export default function QuizPage() {
             <span className={styles.progressCount}>{correctCount} benar</span>
           </div>
           <div className={styles.progressTrack}>
-            <div className={styles.progressFill} style={{ width: `${progressPct}%` }} />
+            <div
+              className={styles.progressFill}
+              style={{ width: `${progressPct}%` }}
+            />
           </div>
         </div>
 
@@ -247,33 +287,44 @@ export default function QuizPage() {
           )}
 
           {/* Multiple choice */}
-          {currentQ.type === 'multiple_choice' && currentQ.options && (
+          {currentQ.type === "multiple_choice" && currentQ.options && (
             <div className={styles.options}>
-              {currentQ.options.map((opt) => (
-                <button
-                  key={opt.key}
-                  className={optionClass(opt.key)}
-                  onClick={() => handleChoiceClick(opt.key)}
-                >
-                  <span className={`${styles.optKey} ${optKeyClass(opt.key)}`}>
-                    {opt.key}
-                  </span>
-                  <span className={`${styles.optText} ${optTextClass(opt.key)}`}>
-                    {opt.value}
-                  </span>
-                </button>
-              ))}
+              {currentQ.options.map((optionValue, idx) => {
+                const label = String.fromCharCode(65 + idx);
+
+                return (
+                  <button
+                    key={label} // Sekarang key-nya unik (A, B, C, D)
+                    className={optionClass(optionValue)} // Gunakan nilainya langsung sebagai identifier
+                    onClick={() => handleChoiceClick(optionValue)}
+                  >
+                    <span
+                      className={`${styles.optKey} ${optKeyClass(optionValue)}`}
+                    >
+                      {label}
+                    </span>
+                    <span
+                      className={`${styles.optText} ${optTextClass(optionValue)}`}
+                    >
+                      {optionValue}{" "}
+                      {/* Tampilkan string "Kantin", "Perpustakaan", dll */}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           )}
 
           {/* Fill blank */}
-          {currentQ.type === 'fill_blank' && (
+          {currentQ.type === "fill_blank" && (
             <form className={styles.fillForm} onSubmit={handleFillSubmit}>
               <input
                 className={`${styles.fillInput} ${
                   isAnswered
-                    ? answerResult.is_correct ? styles.fillCorrect : styles.fillWrong
-                    : ''
+                    ? answerResult.is_correct
+                      ? styles.fillCorrect
+                      : styles.fillWrong
+                    : ""
                 }`}
                 type="text"
                 placeholder="Ketik jawabanmu..."
@@ -288,34 +339,41 @@ export default function QuizPage() {
                 </div>
               )}
               {!isAnswered && (
-                <button className={styles.submitBtn} type="submit" disabled={submitting}>
-                  {submitting ? 'Memeriksa...' : 'Jawab'}
+                <button
+                  className={styles.submitBtn}
+                  type="submit"
+                  disabled={submitting}
+                >
+                  {submitting ? "Memeriksa..." : "Jawab"}
                 </button>
               )}
             </form>
           )}
 
           {/* Drag-drop (click to arrange) */}
-          {currentQ.type === 'drag_drop' && (
+          {currentQ.type === "drag_drop" && (
             <div className={styles.dragWrap}>
               <div className={styles.dragArranged}>
-                {arranged.length === 0
-                  ? <span className={styles.dragPlaceholder}>Klik kata di bawah untuk menyusun kalimat</span>
-                  : arranged.map((w, i) => (
-                      <button
-                        key={`a-${i}`}
-                        className={styles.wordChipArranged}
-                        onClick={() => !isAnswered && moveToAvailable(w, i)}
-                      >
-                        {w}
-                      </button>
-                    ))
-                }
+                {arranged.length === 0 ? (
+                  <span className={styles.dragPlaceholder}>
+                    Klik kata di bawah untuk menyusun kalimat
+                  </span>
+                ) : (
+                  arranged.map((w, i) => (
+                    <button
+                      key={`a-${w}-${i}`}
+                      className={styles.wordChipArranged}
+                      onClick={() => !isAnswered && moveToAvailable(w, i)}
+                    >
+                      {w}
+                    </button>
+                  ))
+                )}
               </div>
               <div className={styles.dragAvailable}>
                 {available.map((w, i) => (
                   <button
-                    key={`v-${i}`}
+                    key={`v-${w}-${i}`}
                     className={styles.wordChip}
                     onClick={() => moveToArranged(w, i)}
                     disabled={isAnswered || submitting}
@@ -326,10 +384,10 @@ export default function QuizPage() {
               </div>
               {isAnswered && !answerResult.is_correct && (
                 <div className={styles.correctAnswerHint}>
-                  Jawaban benar:{' '}
+                  Jawaban benar:{" "}
                   <strong>
                     {Array.isArray(answerResult.correct_answer)
-                      ? answerResult.correct_answer.join(' ')
+                      ? answerResult.correct_answer.join(" ")
                       : answerResult.correct_answer}
                   </strong>
                 </div>
@@ -340,7 +398,7 @@ export default function QuizPage() {
                   onClick={handleDragSubmit}
                   disabled={arranged.length === 0 || submitting}
                 >
-                  {submitting ? 'Memeriksa...' : 'Jawab'}
+                  {submitting ? "Memeriksa..." : "Jawab"}
                 </button>
               )}
             </div>
@@ -349,23 +407,33 @@ export default function QuizPage() {
 
         {/* Feedback */}
         {isAnswered && (
-          <div className={`${styles.feedback} ${answerResult.is_correct ? styles.feedbackCorrect : styles.feedbackWrong}`}>
+          <div
+            className={`${styles.feedback} ${answerResult.is_correct ? styles.feedbackCorrect : styles.feedbackWrong}`}
+          >
             <span className={styles.feedbackIcon}>
-              {answerResult.is_correct ? '✓' : '✕'}
+              {answerResult.is_correct ? "✓" : "✕"}
             </span>
             <div className={styles.feedbackText}>
-              <strong>{answerResult.is_correct ? 'Jawaban Benar!' : 'Kurang Tepat'}</strong>
-              {answerResult.is_correct ? answerResult.feedback_correct : answerResult.feedback_wrong}
+              <strong>
+                {answerResult.is_correct ? "Jawaban Benar!" : "Kurang Tepat"}
+              </strong>
+              {answerResult.is_correct
+                ? answerResult.feedback_correct
+                : answerResult.feedback_wrong}
             </div>
           </div>
         )}
 
         {/* Bottom nav */}
         <div className={styles.bottomNav}>
-          {isAnswered && answerResult.is_correct && answerResult.xp_gained > 0 ? (
+          {isAnswered &&
+          answerResult.is_correct &&
+          answerResult.xp_gained > 0 ? (
             <div className={styles.xpEarned}>
               <span>+{answerResult.xp_gained} XP didapat</span>
-              <span className={styles.xpBadge}>+{answerResult.xp_gained} XP</span>
+              <span className={styles.xpBadge}>
+                +{answerResult.xp_gained} XP
+              </span>
             </div>
           ) : (
             <div />
@@ -375,13 +443,13 @@ export default function QuizPage() {
             <button
               className={styles.nextBtn}
               onClick={handleNext}
-              disabled={phase === 'finishing'}
+              disabled={phase === "finishing"}
             >
-              {phase === 'finishing'
-                ? 'Menyimpan...'
+              {phase === "finishing"
+                ? "Menyimpan..."
                 : isLast
-                  ? 'Selesai →'
-                  : 'Soal Berikutnya →'}
+                  ? "Selesai →"
+                  : "Soal Berikutnya →"}
             </button>
           )}
         </div>

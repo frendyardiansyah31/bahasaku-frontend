@@ -28,6 +28,17 @@ const NAV_ITEMS = [
     ),
   },
   {
+    to: '/quiz',
+    label: 'Latihan Soal',
+    icon: (
+      <svg className={styles.navIcon} viewBox="0 0 16 16" fill="none">
+        <path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M6 6.5c0-1.1.9-2 2-2s2 .9 2 2c0 .8-.5 1.5-1.2 1.8L8 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="8" cy="11" r=".75" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
     to: '/history',
     label: 'Riwayat Sesi',
     icon: (
