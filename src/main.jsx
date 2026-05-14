@@ -13,7 +13,8 @@ import { BrowserRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
-// ── Global app styles ──────────────────────────────────────────────────────
+// ── Global app styles & i18n ────────────────────────────────────────────────
+import './i18n';
 import './shared/styles/global.css';
 
 // ── Aplikasi ───────────────────────────────────────────────────────────────

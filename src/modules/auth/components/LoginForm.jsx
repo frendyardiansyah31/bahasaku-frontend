@@ -1,11 +1,6 @@
-/**
- * LoginForm.jsx
- * Form login dengan email dan kata sandi.
- * Setelah berhasil, redirect berdasarkan status onboarding & role user.
- */
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import useAuthStore from '../authStore';
 import styles from '../auth.module.css';
 
@@ -17,16 +12,16 @@ const INITIAL_FORM = {
 };
 
 // ─── Validasi Client-Side ──────────────────────────────────────────────────
-const validate = (form) => {
+const validate = (form, t) => {
   const errors = {};
 
   if (!form.email.trim()) {
-    errors.email = 'Email wajib diisi.';
+    errors.email = t('login.errors.emailRequired');
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-    errors.email = 'Format email tidak valid.';
+    errors.email = t('login.errors.emailInvalid');
   }
 
-  if (!form.password) errors.password = 'Kata sandi wajib diisi.';
+  if (!form.password) errors.password = t('login.errors.passwordRequired');
 
   return errors;
 };
@@ -52,6 +47,7 @@ function GoogleIcon() {
 
 // ─── Komponen ──────────────────────────────────────────────────────────────
 export default function LoginForm() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { loginUser, isLoading, error, clearError } = useAuthStore();
 
@@ -78,7 +74,7 @@ export default function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const errors = validate(form);
+    const errors = validate(form, t);
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
@@ -107,7 +103,7 @@ export default function LoginForm() {
       {/* ── Email ───────────────────────────────────────────────── */}
       <div className={styles.inputGroup}>
         <label className={styles.inputLabel} htmlFor="email">
-          Email
+          {t('login.emailLabel')}
         </label>
         <input
           id="email"
@@ -116,7 +112,7 @@ export default function LoginForm() {
           autoComplete="email"
           value={form.email}
           onChange={handleChange}
-          placeholder="kamu@email.com"
+          placeholder={t('login.emailPlaceholder')}
           className={`${styles.inputField} ${invalidClass('email')}`}
         />
         {fieldErrors.email && (
@@ -128,10 +124,10 @@ export default function LoginForm() {
       <div className={styles.inputGroup}>
         <div className="d-flex justify-content-between align-items-center mb-1">
           <label className={`${styles.inputLabel} ${styles.inputLabelInline}`} htmlFor="password">
-            Kata Sandi
+            {t('login.passwordLabel')}
           </label>
           <a href="/forgot-password" className={`${styles.authLink} ${styles.authLinkSm}`}>
-            Lupa kata sandi?
+            {t('login.forgotPassword')}
           </a>
         </div>
         <div className={styles.passwordWrapper}>
@@ -142,14 +138,14 @@ export default function LoginForm() {
             autoComplete="current-password"
             value={form.password}
             onChange={handleChange}
-            placeholder="Masukkan kata sandi"
+            placeholder={t('login.passwordPlaceholder')}
             className={`${styles.inputField} ${invalidClass('password')}`}
           />
           <button
             type="button"
             className={styles.togglePassword}
             onClick={() => setShowPassword((v) => !v)}
-            aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+            aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
           >
             <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`} />
           </button>
@@ -170,7 +166,7 @@ export default function LoginForm() {
           className={`form-check-input ${styles.checkboxInput}`}
         />
         <label className={styles.checkboxLabel} htmlFor="remember">
-          Ingat saya 30 hari
+          {t('login.rememberMe')}
         </label>
       </div>
 
@@ -187,27 +183,27 @@ export default function LoginForm() {
               role="status"
               aria-hidden="true"
             />
-            Masuk...
+            {t('login.loginBtnLoading')}
           </>
         ) : (
-          'Masuk'
+          t('login.loginBtn')
         )}
       </button>
 
       {/* ── Divider ─────────────────────────────────────────────── */}
-      <div className={styles.divider}>atau</div>
+      <div className={styles.divider}>{t('login.or')}</div>
 
       {/* ── Tombol Google (OAuth — implementasi di iterasi berikutnya) ── */}
       <button type="button" className={styles.googleBtn} disabled>
         <GoogleIcon />
-        Masuk dengan Google
+        {t('login.googleBtn')}
       </button>
 
       {/* ── Link ke Register ─────────────────────────────────────── */}
       <p className={`text-center mt-3 mb-0 ${styles.authFooter}`}>
-        Belum punya akun?{' '}
+        {t('login.noAccount')}{' '}
         <Link to="/register" className={styles.authLink}>
-          Daftar gratis
+          {t('login.registerFree')}
         </Link>
       </p>
     </form>

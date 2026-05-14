@@ -1,0 +1,35 @@
+{
+  "login": {
+    "brandTitle": "Welcome <br />Back! 👋",
+    "brandSubtitle": "Continue your learning journey. Your streak is waiting — don't let it break today!",
+    "feature1": "Maintain your daily learning streak",
+    "feature2": "Just 10–15 minutes a day is enough",
+    "feature3": "Track your Indonesian language progress",
+    "feature4": "Daily challenges to hone your skills",
+    "brandFooter": "Join thousands of Indonesian language learners",
+    "mobileTitle": "Welcome back",
+    "mobileSubtitle": "Continue your learning journey",
+    "mobileStreak": "{{count}} day streak — don't break it!",
+    "formTitle": "Log in to BahasaKu",
+    "formSubtitle": "Enter your email and password to continue.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@email.com",
+    "passwordLabel": "Password",
+    "forgotPassword": "Forgot password?",
+    "passwordPlaceholder": "Enter your password",
+    "hidePassword": "Hide password",
+    "showPassword": "Show password",
+    "rememberMe": "Remember me for 30 days",
+    "loginBtn": "Log In",
+    "loginBtnLoading": "Logging in...",
+    "or": "or",
+    "googleBtn": "Log in with Google",
+    "noAccount": "Don't have an account?",
+    "registerFree": "Sign up for free",
+    "errors": {
+      "emailRequired": "Email is required.",
+      "emailInvalid": "Invalid email format.",
+      "passwordRequired": "Password is required."
+    }
+  }
+}

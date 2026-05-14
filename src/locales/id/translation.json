@@ -1,0 +1,35 @@
+{
+  "login": {
+    "brandTitle": "Selamat Datang <br />Kembali! 👋",
+    "brandSubtitle": "Lanjutkan perjalanan belajarmu. Streak-mu menunggu — jangan sampai putus hari ini!",
+    "feature1": "Pertahankan streak belajar harianmu",
+    "feature2": "Latihan singkat 10–15 menit sehari sudah cukup",
+    "feature3": "Lihat perkembangan kemampuan bahasa Indonesiamu",
+    "feature4": "Tantangan harian untuk mengasah kemampuanmu",
+    "brandFooter": "Bergabung bersama ribuan pelajar Bahasa Indonesia",
+    "mobileTitle": "Selamat datang kembali",
+    "mobileSubtitle": "Lanjutkan perjalanan belajarmu",
+    "mobileStreak": "{{count}} hari streak — jangan putus!",
+    "formTitle": "Masuk ke BahasaKu",
+    "formSubtitle": "Masukkan email dan kata sandi untuk melanjutkan.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "kamu@email.com",
+    "passwordLabel": "Kata Sandi",
+    "forgotPassword": "Lupa kata sandi?",
+    "passwordPlaceholder": "Masukkan kata sandi",
+    "hidePassword": "Sembunyikan kata sandi",
+    "showPassword": "Tampilkan kata sandi",
+    "rememberMe": "Ingat saya 30 hari",
+    "loginBtn": "Masuk",
+    "loginBtnLoading": "Masuk...",
+    "or": "atau",
+    "googleBtn": "Masuk dengan Google",
+    "noAccount": "Belum punya akun?",
+    "registerFree": "Daftar gratis",
+    "errors": {
+      "emailRequired": "Email wajib diisi.",
+      "emailInvalid": "Format email tidak valid.",
+      "passwordRequired": "Kata sandi wajib diisi."
+    }
+  }
+}

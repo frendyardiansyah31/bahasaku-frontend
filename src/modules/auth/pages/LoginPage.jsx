@@ -1,14 +1,10 @@
-/**
- * LoginPage.jsx
- * Desktop : split layout — panel kiri (branding) + panel kanan (form)
- * Mobile  : hero biru di atas + form di bawah (sesuai bahasaku_mobile_auth.html)
- */
-
+import { useTranslation } from 'react-i18next';
 import LoginForm from '../components/LoginForm';
 import styles from '../auth.module.css';
 
 // ─── Panel Kiri (desktop only) ──────────────────────────────────────────────
 function BrandPanel() {
+  const { t } = useTranslation();
   return (
     <div className={styles.brandPanel}>
       <div className={styles.logo}>
@@ -17,37 +13,33 @@ function BrandPanel() {
       </div>
 
       <div className={styles.brandContent}>
-        <h1 className={styles.brandTitle}>
-          Selamat Datang <br />
-          Kembali! 👋
-        </h1>
+        <h1 className={styles.brandTitle} dangerouslySetInnerHTML={{ __html: t('login.brandTitle') }} />
         <p className={styles.brandSubtitle}>
-          Lanjutkan perjalanan belajarmu. Streak-mu menunggu — jangan sampai
-          putus hari ini!
+          {t('login.brandSubtitle')}
         </p>
 
         <ul className={styles.featureList}>
           <li className={styles.featureItem}>
             <span className={styles.featureIcon}>🔥</span>
-            Pertahankan streak belajar harianmu
+            {t('login.feature1')}
           </li>
           <li className={styles.featureItem}>
             <span className={styles.featureIcon}>⚡</span>
-            Latihan singkat 10–15 menit sehari sudah cukup
+            {t('login.feature2')}
           </li>
           <li className={styles.featureItem}>
             <span className={styles.featureIcon}>📈</span>
-            Lihat perkembangan kemampuan bahasa Indonesiamu
+            {t('login.feature3')}
           </li>
           <li className={styles.featureItem}>
             <span className={styles.featureIcon}>🎯</span>
-            Tantangan harian untuk mengasah kemampuanmu
+            {t('login.feature4')}
           </li>
         </ul>
       </div>
 
       <p className={styles.brandFooter}>
-        Bergabung bersama ribuan pelajar Bahasa Indonesia
+        {t('login.brandFooter')}
       </p>
     </div>
   );
@@ -55,6 +47,7 @@ function BrandPanel() {
 
 // ─── Hero Mobile Login (mobile only) ───────────────────────────────────────
 function MobileLoginHero() {
+  const { t } = useTranslation();
   return (
     <div className={`${styles.mobileLoginHero} d-md-none`}>
       {/* Brand — ditampilkan di atas */}
@@ -65,11 +58,11 @@ function MobileLoginHero() {
 
       {/* Body — judul, streak, dots hari */}
       <div className={styles.lgnHeroBody}>
-        <h2 className={styles.lgnHeroTitle}>Selamat datang kembali</h2>
-        <p className={styles.lgnHeroSubtitle}>Lanjutkan perjalanan belajarmu</p>
+        <h2 className={styles.lgnHeroTitle}>{t('login.mobileTitle')}</h2>
+        <p className={styles.lgnHeroSubtitle}>{t('login.mobileSubtitle')}</p>
         <div className={styles.lgnStreak}>
           <span>🔥</span>
-          4 hari streak — jangan putus!
+          {t('login.mobileStreak', { count: 4 })}
         </div>
         <div className={styles.lgnDots}>
           <div className={`${styles.lgnDot} ${styles.lgnDotDone}`}>S</div>
@@ -87,6 +80,7 @@ function MobileLoginHero() {
 
 // ─── Halaman Utama ─────────────────────────────────────────────────────────
 export default function LoginPage() {
+  const { t } = useTranslation();
   return (
     <div className={styles.authWrapper}>
       {/* Panel kiri branding — hanya tampil di desktop (≥ 768px) */}
@@ -100,9 +94,9 @@ export default function LoginPage() {
         <div className={styles.formContainer}>
           {/* Judul & subjudul — hanya tampil di desktop (mobile sudah ada di MobileLoginHero) */}
           <div className="d-none d-md-block">
-            <h2 className={styles.formTitle}>Masuk ke BahasaKu</h2>
+            <h2 className={styles.formTitle}>{t('login.formTitle')}</h2>
             <p className={styles.formSubtitle}>
-              Masukkan email dan kata sandi untuk melanjutkan.
+              {t('login.formSubtitle')}
             </p>
           </div>
 
