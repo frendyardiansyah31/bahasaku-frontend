@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Sidebar from '../../../shared/components/Sidebar';
 import { getTopics, getTopicDetail } from '../topicsService';
 import styles from '../topics.module.css';
 
 // ─── Konstanta ────────────────────────────────────────────────────────────────
 
-const SKILL_LABELS = { kosakata: 'Kosakata', grammar: 'Grammar', menyimak: 'Menyimak' };
+const SKILL_I18N_KEY = {
+  kosakata: 'dashboard.skillKosakata',
+  grammar:  'dashboard.skillGrammar',
+  menyimak: 'dashboard.skillMenyimak',
+};
 
 const SKILL_CHIP_CLASS = {
   kosakata: styles.chipKosakata,
@@ -25,26 +30,24 @@ const ICON_BG = {
   transportasi: '#fef3e8', kerja: '#f3eef7', lainnya: '#f7f0ee',
 };
 
-const FILTERS = [
-  { key: 'semua',        label: 'Semua' },
-  { key: 'kampus',       label: '🎓 Kampus' },
-  { key: 'pasar',        label: '🛒 Pasar' },
-  { key: 'transportasi', label: '🚌 Transportasi' },
-  { key: 'kerja',        label: '💼 Tempat Kerja' },
-  { key: 'lainnya',      label: '📍 Lainnya' },
+const FILTER_KEYS = [
+  { key: 'semua',        i18nKey: 'topics.filterAll' },
+  { key: 'kampus',       i18nKey: 'topics.filterKampus' },
+  { key: 'pasar',        i18nKey: 'topics.filterPasar' },
+  { key: 'transportasi', i18nKey: 'topics.filterTransportasi' },
+  { key: 'kerja',        i18nKey: 'topics.filterKerja' },
+  { key: 'lainnya',      i18nKey: 'topics.filterLainnya' },
 ];
-
-const mulaiLabel = (pct) =>
-  pct === 0 ? 'Mulai Skenario' : pct === 100 ? 'Ulangi Skenario' : 'Lanjutkan';
 
 // ─── Halaman Daftar Topik ─────────────────────────────────────────────────────
 
 export default function TopicsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [topics, setTopics]               = useState([]);
-  const [loading, setLoading]             = useState(true);
-  const [error, setError]                 = useState(null);
+  const [isLoading, setIsLoading]         = useState(true);
+  const [hasError, setHasError]           = useState(false);
   const [search, setSearch]               = useState('');
   const [category, setCategory]           = useState('semua');
   const [selectedId, setSelectedId]       = useState(null);
@@ -54,18 +57,18 @@ export default function TopicsPage() {
   useEffect(() => {
     getTopics()
       .then((res) => setTopics(res.data.topics))
-      .catch(() => setError('Gagal memuat topik. Silakan coba lagi.'))
-      .finally(() => setLoading(false));
+      .catch(() => setHasError(true))
+      .finally(() => setIsLoading(false));
   }, []);
 
   // ── Client-side filter ─────────────────────────────────────────────────────
-  const filtered = topics.filter((t) => {
-    const matchCat    = category === 'semua' || t.category === category;
+  const filtered = topics.filter((topic) => {
+    const matchCat    = category === 'semua' || topic.category === category;
     const q           = search.toLowerCase();
     const matchSearch = !q
-      || t.name.toLowerCase().includes(q)
-      || t.location.toLowerCase().includes(q)
-      || t.description.toLowerCase().includes(q);
+      || topic.name.toLowerCase().includes(q)
+      || topic.location.toLowerCase().includes(q)
+      || topic.description.toLowerCase().includes(q);
     return matchCat && matchSearch;
   });
 
@@ -85,11 +88,23 @@ export default function TopicsPage() {
     setDetail(null);
   };
 
-  // ── Render states ──────────────────────────────────────────────────────────
-  if (loading) return <div className={styles.loading}>Memuat topik...</div>;
-  if (error)   return <div className={styles.errorBox}>{error}</div>;
+  const progressLabel = (pct) => {
+    if (pct === 0)   return t('topics.progressNotStarted');
+    if (pct === 100) return t('topics.progressDone');
+    return t('topics.progressPct', { pct });
+  };
 
-  const completedCount = topics.filter((t) => t.user_progress.percent === 100).length;
+  const mulaiLabel = (pct) => {
+    if (pct === 0)   return t('topics.btnStart');
+    if (pct === 100) return t('topics.btnRepeat');
+    return t('topics.btnContinue');
+  };
+
+  // ── Render states ──────────────────────────────────────────────────────────
+  if (isLoading) return <div className={styles.loading}>{t('topics.loading')}</div>;
+  if (hasError)  return <div className={styles.errorBox}>{t('topics.errorLoad')}</div>;
+
+  const completedCount = topics.filter((topic) => topic.user_progress.percent === 100).length;
   const isOpen = !!selectedId;
 
   return (
@@ -101,8 +116,8 @@ export default function TopicsPage() {
         <div className={`${styles.listPanel} ${isOpen ? styles.listPanelShrink : ''}`}>
           <div className={styles.topbar}>
             <div>
-              <h2>Daftar Topik</h2>
-              <p>{topics.length} skenario nyata · {completedCount} sudah diselesaikan</p>
+              <h2>{t('topics.pageTitle')}</h2>
+              <p>{t('topics.subtitle', { total: topics.length, completed: completedCount })}</p>
             </div>
           </div>
 
@@ -110,63 +125,61 @@ export default function TopicsPage() {
             <input
               className={styles.search}
               type="text"
-              placeholder="Cari skenario..."
+              placeholder={t('topics.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
 
           <div className={styles.filterRow}>
-            {FILTERS.map((f) => (
+            {FILTER_KEYS.map((f) => (
               <button
                 key={f.key}
                 className={`${styles.filterBtn} ${category === f.key ? styles.filterBtnActive : ''}`}
                 onClick={() => setCategory(f.key)}
               >
-                {f.label}
+                {t(f.i18nKey)}
               </button>
             ))}
           </div>
 
           {filtered.length === 0 ? (
-            <div className={styles.emptyState}>Tidak ada topik ditemukan.</div>
+            <div className={styles.emptyState}>{t('topics.emptyState')}</div>
           ) : (
             <div className={`${styles.grid} ${isOpen ? styles.gridOneCol : ''}`}>
-              {filtered.map((t) => (
+              {filtered.map((topic) => (
                 <div
-                  key={t.id}
-                  className={`${styles.topikCard} ${selectedId === t.id ? styles.topikCardSelected : ''}`}
-                  onClick={() => handleCardClick(t.id)}
+                  key={topic.id}
+                  className={`${styles.topikCard} ${selectedId === topic.id ? styles.topikCardSelected : ''}`}
+                  onClick={() => handleCardClick(topic.id)}
                 >
                   <div className={styles.topikTop}>
-                    <div className={styles.topikIcon} style={{ background: ICON_BG[t.category] ?? '#f0f0f0' }}>
-                      {t.icon}
+                    <div className={styles.topikIcon} style={{ background: ICON_BG[topic.category] ?? '#f0f0f0' }}>
+                      {topic.icon}
                     </div>
-                    <span className={`${styles.levelBadge} ${LEVEL_CLASS[t.cefr_level] ?? ''}`}>
-                      {t.cefr_level}
+                    <span className={`${styles.levelBadge} ${LEVEL_CLASS[topic.cefr_level] ?? ''}`}>
+                      {topic.cefr_level}
                     </span>
                   </div>
-                  <div className={styles.topikLokasi}>📍 {t.location}</div>
-                  <div className={styles.topikName}>{t.name}</div>
-                  <div className={styles.topikDesc}>{t.description}</div>
+                  <div className={styles.topikLokasi}>📍 {topic.location}</div>
+                  <div className={styles.topikName}>{topic.name}</div>
+                  <div className={styles.topikDesc}>{topic.description}</div>
                   <div className={styles.skillTags}>
-                    {t.skills.map((s) => (
-                      <span key={s} className={styles.skillTag}>{SKILL_LABELS[s] ?? s}</span>
+                    {topic.skills.map((s) => (
+                      <span key={s} className={styles.skillTag}>
+                        {t(SKILL_I18N_KEY[s] ?? s, s)}
+                      </span>
                     ))}
                   </div>
                   <div className={styles.topikMeta}>
-                    <span className={styles.metaItem}>📝 {t.total_questions} soal</span>
-                    <span className={styles.metaItem}>⏱ {t.estimated_minutes} menit</span>
+                    <span className={styles.metaItem}>{t('topics.cardQuestions', { n: topic.total_questions })}</span>
+                    <span className={styles.metaItem}>{t('topics.cardMinutes', { n: topic.estimated_minutes })}</span>
                   </div>
                   <div className={styles.progressTrack}>
-                    <div className={styles.progressFill} style={{ width: `${t.user_progress.percent}%` }} />
+                    <div className={styles.progressFill} style={{ width: `${topic.user_progress.percent}%` }} />
                   </div>
                   <div className={styles.progressLabel}>
-                    {t.user_progress.percent === 0
-                      ? 'Belum dimulai'
-                      : t.user_progress.percent === 100
-                        ? 'Selesai'
-                        : `${t.user_progress.percent}% selesai`}
+                    {progressLabel(topic.user_progress.percent)}
                   </div>
                 </div>
               ))}
@@ -177,7 +190,9 @@ export default function TopicsPage() {
         {/* ── Detail panel ── */}
         <div className={`${styles.detailPanel} ${isOpen ? styles.detailPanelOpen : ''}`}>
           <div className={styles.detailInner}>
-            {detailLoading && <div className={styles.detailLoading}>Memuat detail...</div>}
+            {detailLoading && (
+              <div className={styles.detailLoading}>{t('topics.detailLoading')}</div>
+            )}
 
             {!detailLoading && detail && (
               <>
@@ -198,29 +213,31 @@ export default function TopicsPage() {
                 <div className={styles.detailStats}>
                   <div className={styles.detailStat}>
                     <div className={styles.detailStatVal}>{detail.total_questions}</div>
-                    <div className={styles.detailStatKey}>Jumlah soal</div>
+                    <div className={styles.detailStatKey}>{t('topics.detailStatQuestions')}</div>
                   </div>
                   <div className={styles.detailStat}>
-                    <div className={styles.detailStatVal}>{detail.estimated_minutes} mnt</div>
-                    <div className={styles.detailStatKey}>Estimasi waktu</div>
+                    <div className={styles.detailStatVal}>
+                      {t('topics.detailStatMinutes', { n: detail.estimated_minutes })}
+                    </div>
+                    <div className={styles.detailStatKey}>{t('topics.detailStatTime')}</div>
                   </div>
                   <div className={styles.detailStat}>
                     <div className={styles.detailStatVal}>{detail.user_progress.percent}%</div>
-                    <div className={styles.detailStatKey}>Progress</div>
+                    <div className={styles.detailStatKey}>{t('topics.detailStatProgress')}</div>
                   </div>
                   <div className={styles.detailStat}>
                     <div className={styles.detailStatVal}>{detail.cefr_level}</div>
-                    <div className={styles.detailStatKey}>Level CEFR</div>
+                    <div className={styles.detailStatKey}>{t('topics.detailStatLevel')}</div>
                   </div>
                 </div>
 
-                <div className={styles.detailSection}>CONTOH PERCAKAPAN</div>
+                <div className={styles.detailSection}>{t('topics.sectionDialogue')}</div>
                 <div className={styles.contohBox}>
                   <p>{detail.example_dialogue}</p>
                   <span>{detail.example_context}</span>
                 </div>
 
-                <div className={styles.detailSection}>YANG AKAN DIPELAJARI</div>
+                <div className={styles.detailSection}>{t('topics.sectionLearn')}</div>
                 <div className={styles.subtopikList}>
                   {detail.subtopics.map((s, i) => (
                     <div key={i} className={styles.subtopikItem}>
@@ -230,11 +247,11 @@ export default function TopicsPage() {
                   ))}
                 </div>
 
-                <div className={styles.detailSection}>SKILL YANG DILATIH</div>
+                <div className={styles.detailSection}>{t('topics.sectionSkills')}</div>
                 <div className={styles.skillRow}>
                   {detail.skills.map((s) => (
                     <span key={s} className={`${styles.skillChip} ${SKILL_CHIP_CLASS[s] ?? ''}`}>
-                      {SKILL_LABELS[s] ?? s}
+                      {t(SKILL_I18N_KEY[s] ?? s, s)}
                     </span>
                   ))}
                 </div>

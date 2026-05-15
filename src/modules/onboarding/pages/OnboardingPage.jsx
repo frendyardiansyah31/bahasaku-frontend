@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import useAuthStore from '../../auth/authStore';
-import styles from '../onboarding.module.css';
+import LanguageSwitcher from '../../../shared/components/LanguageSwitcher';
+import styles from '../../../shared/styles/onboarding.module.css';
 
 // ─── Data Konstanta ───────────────────────────────────────────────────────────
 
@@ -16,15 +18,13 @@ const COUNTRIES = [
   { flag: '🌏', name: 'Lainnya' },
 ];
 
-// Hanya A1 dan A2 sesuai API spec
 const LEVELS = [
-  { code: 'A1', label: 'Pemula', desc: 'Baru mulai belajar Bahasa Indonesia' },
-  { code: 'A2', label: 'Dasar', desc: 'Mengenal dasar, ingin lebih lancar' },
+  { code: 'A1' },
+  { code: 'A2' },
 ];
 
 const TOTAL_STEPS = 3;
 
-// Icon per step (mobile only — disembunyikan di desktop via CSS)
 const STEP_ICONS = {
   1: { emoji: '👋', cls: styles.stepIcon1 },
   2: { emoji: '🌏', cls: styles.stepIcon2 },
@@ -33,7 +33,6 @@ const STEP_ICONS = {
 
 // ─── Sub-komponen ─────────────────────────────────────────────────────────────
 
-/** Step indicator berupa circles + lines — ditampilkan di desktop */
 function StepBar({ current }) {
   const circleClass = (i) => {
     if (i < current) return `${styles.stepCircle} ${styles.done}`;
@@ -57,7 +56,6 @@ function StepBar({ current }) {
   );
 }
 
-/** Step indicator berupa pill dots — ditampilkan di mobile */
 function StepDots({ current }) {
   const dotClass = (i) => {
     if (i < current) return `${styles.stepDot} ${styles.done}`;
@@ -74,11 +72,6 @@ function StepDots({ current }) {
   );
 }
 
-/**
- * Wrapper layout yang menangani perbedaan desktop vs mobile:
- * - Desktop: header brand + StepBar di atas card
- * - Mobile: mobileTop (brand + StepDots) di dalam card + step icon
- */
 function OnboardingLayout({ current, children }) {
   const iconData = STEP_ICONS[current];
 
@@ -91,6 +84,7 @@ function OnboardingLayout({ current, children }) {
           <span className={styles.brandName}>BahasaKu</span>
         </div>
         <StepBar current={current} />
+        <LanguageSwitcher />
       </div>
 
       <div className={styles.card}>
@@ -101,9 +95,9 @@ function OnboardingLayout({ current, children }) {
             <span className={styles.brandName}>BahasaKu</span>
           </div>
           <StepDots current={current} />
+          <LanguageSwitcher />
         </div>
 
-        {/* Mobile: icon per step */}
         {iconData && (
           <div className={`${styles.stepIcon} ${iconData.cls}`}>
             {iconData.emoji}
@@ -119,6 +113,7 @@ function OnboardingLayout({ current, children }) {
 // ─── Halaman Utama ────────────────────────────────────────────────────────────
 
 export default function OnboardingPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const onboardUser = useAuthStore((s) => s.onboardUser);
@@ -130,12 +125,15 @@ export default function OnboardingPage() {
   const [countrySearch, setCountrySearch] = useState('');
   const [apiError, setApiError] = useState(null);
 
-  const userName = user?.name ?? 'Pengguna';
-  const selectedLevelObj = LEVELS.find((l) => l.code === level);
+  const userName = user?.name ?? t('onboarding.defaultName');
 
-  const filteredCountries = COUNTRIES.filter((c) =>
-    c.name.toLowerCase().includes(countrySearch.toLowerCase())
-  );
+  const filteredCountries = COUNTRIES.filter((c) => {
+    const displayName = t(`onboarding.countries.${c.name}`, c.name);
+    return (
+      displayName.toLowerCase().includes(countrySearch.toLowerCase()) ||
+      c.name.toLowerCase().includes(countrySearch.toLowerCase())
+    );
+  });
 
   const handleSubmit = async () => {
     setApiError(null);
@@ -143,7 +141,7 @@ export default function OnboardingPage() {
       await onboardUser({ country, initial_level: level });
       setStep(4);
     } catch (err) {
-      setApiError(err.response?.data?.message ?? 'Onboarding gagal. Silakan coba lagi.');
+      setApiError(err.response?.data?.message ?? t('onboarding.apiError'));
     }
   };
 
@@ -152,15 +150,19 @@ export default function OnboardingPage() {
   if (step === 1) {
     return (
       <OnboardingLayout current={1}>
-        <div className={styles.stepTag}>Langkah 1 dari {TOTAL_STEPS}</div>
-        <div className={styles.stepTitle}>Halo, {userName}!</div>
-        <div className={styles.stepSub}>
-          Kami sudah mengenalmu. Sekarang mari lengkapi profilmu agar pengalaman belajarmu lebih personal.
+        <div className={styles.stepTag}>
+          {t('onboarding.stepTag', { current: 1, total: TOTAL_STEPS })}
         </div>
+        <div className={styles.stepTitle}>
+          {t('onboarding.step1Title', { name: userName })}
+        </div>
+        <div className={styles.stepSub}>{t('onboarding.step1Sub')}</div>
         <div className={styles.nav}>
-          <span className={styles.progressText}>1 / {TOTAL_STEPS}</span>
+          <span className={styles.progressText}>
+            {t('onboarding.progressText', { current: 1, total: TOTAL_STEPS })}
+          </span>
           <button className={styles.btnNext} onClick={() => setStep(2)}>
-            Lanjut →
+            {t('onboarding.btnNext')}
           </button>
         </div>
       </OnboardingLayout>
@@ -172,16 +174,16 @@ export default function OnboardingPage() {
   if (step === 2) {
     return (
       <OnboardingLayout current={2}>
-        <div className={styles.stepTag}>Langkah 2 dari {TOTAL_STEPS}</div>
-        <div className={styles.stepTitle}>Dari mana asalmu?</div>
-        <div className={styles.stepSub}>
-          Ini membantu kami menyesuaikan konten dan konteks budaya dalam latihan.
+        <div className={styles.stepTag}>
+          {t('onboarding.stepTag', { current: 2, total: TOTAL_STEPS })}
         </div>
+        <div className={styles.stepTitle}>{t('onboarding.step2Title')}</div>
+        <div className={styles.stepSub}>{t('onboarding.step2Sub')}</div>
 
         <input
           className={styles.countrySearch}
           type="text"
-          placeholder="Cari negara..."
+          placeholder={t('onboarding.countrySearchPlaceholder')}
           value={countrySearch}
           onChange={(e) => setCountrySearch(e.target.value)}
         />
@@ -194,21 +196,21 @@ export default function OnboardingPage() {
               onClick={() => setCountry(c.name)}
             >
               <span className={styles.countryFlag}>{c.flag}</span>
-              {c.name}
+              {t(`onboarding.countries.${c.name}`, c.name)}
             </button>
           ))}
         </div>
 
         <div className={styles.nav}>
           <button className={styles.btnBack} onClick={() => setStep(1)}>
-            ← Kembali
+            {t('onboarding.btnBack')}
           </button>
           <button
             className={styles.btnNext}
             onClick={() => setStep(3)}
             disabled={!country}
           >
-            Lanjut →
+            {t('onboarding.btnNext')}
           </button>
         </div>
       </OnboardingLayout>
@@ -220,11 +222,11 @@ export default function OnboardingPage() {
   if (step === 3) {
     return (
       <OnboardingLayout current={3}>
-        <div className={styles.stepTag}>Langkah 3 dari {TOTAL_STEPS}</div>
-        <div className={styles.stepTitle}>Pilih level awalmu</div>
-        <div className={styles.stepSub}>
-          Jangan khawatir, kamu bisa ubah ini nanti dari profil.
+        <div className={styles.stepTag}>
+          {t('onboarding.stepTag', { current: 3, total: TOTAL_STEPS })}
         </div>
+        <div className={styles.stepTitle}>{t('onboarding.step3Title')}</div>
+        <div className={styles.stepSub}>{t('onboarding.step3Sub')}</div>
 
         <div className={styles.levelList}>
           {LEVELS.map((l) => (
@@ -234,8 +236,12 @@ export default function OnboardingPage() {
               onClick={() => setLevel(l.code)}
             >
               <div className={styles.levelLeft}>
-                <span className={styles.levelName}>{l.label}</span>
-                <span className={styles.levelDesc}>{l.desc}</span>
+                <span className={styles.levelName}>
+                  {t(`onboarding.levels.${l.code}.label`)}
+                </span>
+                <span className={styles.levelDesc}>
+                  {t(`onboarding.levels.${l.code}.desc`)}
+                </span>
               </div>
               <span className={styles.levelBadge}>{l.code}</span>
             </button>
@@ -244,14 +250,14 @@ export default function OnboardingPage() {
 
         <div className={styles.nav}>
           <button className={styles.btnBack} onClick={() => setStep(2)}>
-            ← Kembali
+            {t('onboarding.btnBack')}
           </button>
           <button
             className={styles.btnNext}
             onClick={handleSubmit}
             disabled={!level || isLoading}
           >
-            {isLoading ? 'Menyimpan...' : 'Mulai Belajar →'}
+            {isLoading ? t('onboarding.btnSaving') : t('onboarding.btnStartLearning')}
           </button>
         </div>
       </OnboardingLayout>
@@ -276,30 +282,32 @@ export default function OnboardingPage() {
           </svg>
         </div>
 
-        <h2 className={styles.successTitle}>Halo, {userName}!</h2>
-        <p className={styles.successSubtitle}>
-          Profilmu sudah siap. Yuk mulai latihan pertamamu hari ini dan jaga streakmu!
-        </p>
+        <h2 className={styles.successTitle}>
+          {t('onboarding.successTitle', { name: userName })}
+        </h2>
+        <p className={styles.successSubtitle}>{t('onboarding.successSubtitle')}</p>
 
         <div className={styles.summary}>
           <div className={styles.summaryRow}>
-            <span className={styles.summaryKey}>Nama</span>
+            <span className={styles.summaryKey}>{t('onboarding.summaryName')}</span>
             <span className={styles.summaryVal}>{userName}</span>
           </div>
           <div className={styles.summaryRow}>
-            <span className={styles.summaryKey}>Negara</span>
-            <span className={styles.summaryVal}>{country}</span>
+            <span className={styles.summaryKey}>{t('onboarding.summaryCountry')}</span>
+            <span className={styles.summaryVal}>
+              {t(`onboarding.countries.${country}`, country)}
+            </span>
           </div>
           <div className={styles.summaryRow}>
-            <span className={styles.summaryKey}>Level Awal</span>
+            <span className={styles.summaryKey}>{t('onboarding.summaryLevel')}</span>
             <span className={styles.summaryVal}>
-              {selectedLevelObj ? `${selectedLevelObj.label} (${selectedLevelObj.code})` : level}
+              {t(`onboarding.levels.${level}.label`)} ({level})
             </span>
           </div>
         </div>
 
         <button className={styles.btnStart} onClick={() => navigate('/dashboard')}>
-          Mulai Latihan Pertama →
+          {t('onboarding.btnStartPractice')}
         </button>
       </div>
     </OnboardingLayout>

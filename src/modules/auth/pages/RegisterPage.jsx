@@ -1,14 +1,10 @@
-/**
- * RegisterPage.jsx
- * Desktop : split layout — panel kiri (branding) + panel kanan (form)
- * Mobile  : hero biru di atas + form di bawah (sesuai bahasaku_mobile_register_v2.html)
- */
-
+import { useTranslation } from 'react-i18next';
 import RegisterForm from '../components/RegisterForm';
 import styles from '../auth.module.css';
 
 // ─── Panel Kiri (desktop only) ──────────────────────────────────────────────
 function BrandPanel() {
+  const { t } = useTranslation();
   return (
     <div className={styles.brandPanel}>
       <div className={styles.logo}>
@@ -17,45 +13,41 @@ function BrandPanel() {
       </div>
 
       <div className={styles.brandContent}>
-        <h1 className={styles.brandTitle}>
-          Kuasai Bahasa Indonesia, <br />
-          Raih Prestasi Terbaikmu
-        </h1>
+        <h1 className={styles.brandTitle} dangerouslySetInnerHTML={{ __html: t('register.brandTitle') }} />
         <p className={styles.brandSubtitle}>
-          Platform latihan bahasa yang adaptif, menyenangkan, dan berbasis data
-          untuk membantu kamu mencapai level kemahiran impian.
+          {t('register.brandSubtitle')}
         </p>
 
         <ul className={styles.featureList}>
           <li className={styles.featureItem}>
             <span className={styles.featureIcon}>📚</span>
-            Materi terstruktur dari A1 hingga C2
+            {t('register.feature1')}
           </li>
           <li className={styles.featureItem}>
             <span className={styles.featureIcon}>🔥</span>
-            Streak harian untuk menjaga konsistensi belajar
+            {t('register.feature2')}
           </li>
           <li className={styles.featureItem}>
             <span className={styles.featureIcon}>🏆</span>
-            Sistem XP dan pencapaian yang memotivasimu
+            {t('register.feature3')}
           </li>
           <li className={styles.featureItem}>
             <span className={styles.featureIcon}>📊</span>
-            Progress yang terukur dan visualisasi kemajuan
+            {t('register.feature4')}
           </li>
         </ul>
       </div>
 
       <p className={styles.brandFooter}>
-        Bergabung bersama ribuan pelajar Bahasa Indonesia
+        {t('register.brandFooter')}
       </p>
     </div>
   );
 }
 
 // ─── Hero Mobile (mobile only, menggantikan panel kiri) ────────────────────
-// Desain mengacu pada bahasaku_mobile_register_v2.html
 function MobileHero() {
+  const { t } = useTranslation();
   return (
     <div className={`${styles.mobileHero} d-md-none`}>
       {/* Brand */}
@@ -64,24 +56,24 @@ function MobileHero() {
         <span className={styles.mobileHeroBrandName}>BahasaKu</span>
       </div>
 
-      <h2 className={styles.mobileHeroTitle}>Buat akun baru</h2>
+      <h2 className={styles.mobileHeroTitle}>{t('register.mobileTitle')}</h2>
       <p className={styles.mobileHeroSubtitle}>
-        Data negara &amp; level diatur setelah daftar
+        {t('register.mobileSubtitle')}
       </p>
 
       {/* Progress steps — step 1 aktif karena kita sedang di halaman register */}
       <div className={styles.mobileSteps}>
         <div className={styles.mobileStep}>
           <div className={`${styles.mobileStepNum} ${styles.done}`}>1</div>
-          <span className={`${styles.mobileStepText} ${styles.done}`}>Buat akun</span>
+          <span className={`${styles.mobileStepText} ${styles.done}`}>{t('register.step1')}</span>
         </div>
         <div className={styles.mobileStep}>
           <div className={styles.mobileStepNum}>2</div>
-          <span className={styles.mobileStepText}>Atur profil &amp; level</span>
+          <span className={styles.mobileStepText}>{t('register.step2')}</span>
         </div>
         <div className={styles.mobileStep}>
           <div className={styles.mobileStepNum}>3</div>
-          <span className={styles.mobileStepText}>Mulai latihan</span>
+          <span className={styles.mobileStepText}>{t('register.step3')}</span>
         </div>
       </div>
     </div>
@@ -90,6 +82,7 @@ function MobileHero() {
 
 // ─── Halaman Utama ─────────────────────────────────────────────────────────
 export default function RegisterPage() {
+  const { t } = useTranslation();
   return (
     <div className={styles.authWrapper}>
       {/* Panel kiri branding — hanya tampil di desktop (≥ 768px) */}
@@ -103,9 +96,9 @@ export default function RegisterPage() {
         <div className={styles.formContainer}>
           {/* Judul & subjudul — hanya tampil di desktop (mobile sudah ada di MobileHero) */}
           <div className="d-none d-md-block">
-            <h2 className={styles.formTitle}>Buat Akun Baru</h2>
+            <h2 className={styles.formTitle}>{t('register.formTitle')}</h2>
             <p className={styles.formSubtitle}>
-              Daftar gratis dan mulai perjalanan belajarmu hari ini.
+              {t('register.formSubtitle')}
             </p>
           </div>
 

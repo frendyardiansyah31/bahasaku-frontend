@@ -1,12 +1,6 @@
-/**
- * RegisterForm.jsx
- * Form pendaftaran akun baru.
- * Validasi client-side dilakukan sebelum request ke API.
- * Error dari API ditampilkan di atas tombol submit.
- */
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 import useAuthStore from '../authStore';
 import styles from '../auth.module.css';
 
@@ -21,31 +15,31 @@ const INITIAL_FORM = {
 };
 
 // ─── Validasi Client-Side ──────────────────────────────────────────────────
-const validate = (form) => {
+const validate = (form, t) => {
   const errors = {};
 
-  if (!form.first_name.trim()) errors.first_name = 'Nama depan wajib diisi.';
-  if (!form.last_name.trim()) errors.last_name = 'Nama belakang wajib diisi.';
+  if (!form.first_name.trim()) errors.first_name = t('register.errors.firstNameRequired');
+  if (!form.last_name.trim()) errors.last_name = t('register.errors.lastNameRequired');
 
   if (!form.email.trim()) {
-    errors.email = 'Email wajib diisi.';
+    errors.email = t('register.errors.emailRequired');
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-    errors.email = 'Format email tidak valid.';
+    errors.email = t('register.errors.emailInvalid');
   }
 
   if (!form.password) {
-    errors.password = 'Kata sandi wajib diisi.';
+    errors.password = t('register.errors.passwordRequired');
   } else if (form.password.length < 8) {
-    errors.password = 'Kata sandi minimal 8 karakter.';
+    errors.password = t('register.errors.passwordMin');
   }
 
   if (!form.password_confirm) {
-    errors.password_confirm = 'Konfirmasi kata sandi wajib diisi.';
+    errors.password_confirm = t('register.errors.passwordConfirmRequired');
   } else if (form.password_confirm !== form.password) {
-    errors.password_confirm = 'Kata sandi dan konfirmasi tidak sama.';
+    errors.password_confirm = t('register.errors.passwordMatch');
   }
 
-  if (!form.terms) errors.terms = 'Kamu harus menyetujui syarat & ketentuan.';
+  if (!form.terms) errors.terms = t('register.errors.termsRequired');
 
   return errors;
 };
@@ -64,6 +58,7 @@ function GoogleIcon() {
 
 // ─── Komponen ──────────────────────────────────────────────────────────────
 export default function RegisterForm() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { registerUser, isLoading, error, clearError } = useAuthStore();
 
@@ -82,12 +77,10 @@ export default function RegisterForm() {
       [name]: type === 'checkbox' ? checked : value,
     }));
 
-    // Hapus error field yang sedang diketik agar UX lebih nyaman
     if (fieldErrors[name]) {
       setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
     }
 
-    // Hapus error API saat user mulai mengetik
     if (error) clearError();
   };
 
@@ -95,25 +88,21 @@ export default function RegisterForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const errors = validate(form);
+    const errors = validate(form, t);
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
     }
 
     try {
-      // Kirim data ke API (tanpa field 'terms' yang hanya untuk UI)
       const { terms, ...apiData } = form;
       await registerUser(apiData);
-
-      // Berhasil → arahkan ke onboarding
       navigate('/onboarding');
     } catch {
-      // Error sudah dihandle di store, tidak perlu action tambahan
+      // Error sudah dihandle di store
     }
   };
 
-  // ── Helper class untuk field yang invalid ─────────────────────────────
   const invalidClass = (field) => (fieldErrors[field] ? styles.isInvalid : '');
 
   return (
@@ -131,7 +120,7 @@ export default function RegisterForm() {
         <div className="col-6">
           <div className={styles.inputGroup}>
             <label className={styles.inputLabel} htmlFor="first_name">
-              Nama Depan
+              {t('register.firstNameLabel')}
             </label>
             <input
               id="first_name"
@@ -140,7 +129,7 @@ export default function RegisterForm() {
               autoComplete="given-name"
               value={form.first_name}
               onChange={handleChange}
-              placeholder="Andi"
+              placeholder={t('register.firstNamePlaceholder')}
               className={`${styles.inputField} ${invalidClass('first_name')}`}
             />
             {fieldErrors.first_name && (
@@ -151,7 +140,7 @@ export default function RegisterForm() {
         <div className="col-6">
           <div className={styles.inputGroup}>
             <label className={styles.inputLabel} htmlFor="last_name">
-              Nama Belakang
+              {t('register.lastNameLabel')}
             </label>
             <input
               id="last_name"
@@ -160,7 +149,7 @@ export default function RegisterForm() {
               autoComplete="family-name"
               value={form.last_name}
               onChange={handleChange}
-              placeholder="Pratama"
+              placeholder={t('register.lastNamePlaceholder')}
               className={`${styles.inputField} ${invalidClass('last_name')}`}
             />
             {fieldErrors.last_name && (
@@ -173,7 +162,7 @@ export default function RegisterForm() {
       {/* ── Email ───────────────────────────────────────────────── */}
       <div className={styles.inputGroup}>
         <label className={styles.inputLabel} htmlFor="email">
-          Email
+          {t('register.emailLabel')}
         </label>
         <input
           id="email"
@@ -182,7 +171,7 @@ export default function RegisterForm() {
           autoComplete="email"
           value={form.email}
           onChange={handleChange}
-          placeholder="kamu@email.com"
+          placeholder={t('register.emailPlaceholder')}
           className={`${styles.inputField} ${invalidClass('email')}`}
         />
         {fieldErrors.email && (
@@ -193,7 +182,7 @@ export default function RegisterForm() {
       {/* ── Kata Sandi ──────────────────────────────────────────── */}
       <div className={styles.inputGroup}>
         <label className={styles.inputLabel} htmlFor="password">
-          Kata Sandi
+          {t('register.passwordLabel')}
         </label>
         <div className={styles.passwordWrapper}>
           <input
@@ -203,14 +192,14 @@ export default function RegisterForm() {
             autoComplete="new-password"
             value={form.password}
             onChange={handleChange}
-            placeholder="Min. 8 karakter"
+            placeholder={t('register.passwordPlaceholder')}
             className={`${styles.inputField} ${invalidClass('password')}`}
           />
           <button
             type="button"
             className={styles.togglePassword}
             onClick={() => setShowPassword((v) => !v)}
-            aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+            aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
           >
             <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`} />
           </button>
@@ -223,7 +212,7 @@ export default function RegisterForm() {
       {/* ── Konfirmasi Kata Sandi ───────────────────────────────── */}
       <div className={styles.inputGroup}>
         <label className={styles.inputLabel} htmlFor="password_confirm">
-          Konfirmasi Kata Sandi
+          {t('register.passwordConfirmLabel')}
         </label>
         <div className={styles.passwordWrapper}>
           <input
@@ -233,14 +222,14 @@ export default function RegisterForm() {
             autoComplete="new-password"
             value={form.password_confirm}
             onChange={handleChange}
-            placeholder="Ulangi kata sandi"
+            placeholder={t('register.passwordConfirmPlaceholder')}
             className={`${styles.inputField} ${invalidClass('password_confirm')}`}
           />
           <button
             type="button"
             className={styles.togglePassword}
             onClick={() => setShowPasswordConfirm((v) => !v)}
-            aria-label={showPasswordConfirm ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+            aria-label={showPasswordConfirm ? t('login.hidePassword') : t('login.showPassword')}
           >
             <i className={`bi ${showPasswordConfirm ? 'bi-eye-slash' : 'bi-eye'}`} />
           </button>
@@ -261,11 +250,9 @@ export default function RegisterForm() {
           className={`form-check-input mt-1 flex-shrink-0 ${styles.checkboxInput}`}
         />
         <label className={styles.checkboxLabel} htmlFor="terms">
-          Saya setuju dengan{' '}
-          <a href="/terms" className={styles.authLink}>
-            Syarat &amp; Ketentuan
-          </a>{' '}
-          BahasaKu
+          <Trans i18nKey="register.termsText">
+            Saya setuju dengan <Link to="/terms" className={styles.authLink}>Syarat &amp; Ketentuan</Link> BahasaKu
+          </Trans>
         </label>
       </div>
       {fieldErrors.terms && (
@@ -287,27 +274,27 @@ export default function RegisterForm() {
               role="status"
               aria-hidden="true"
             />
-            Mendaftar...
+            {t('register.submitBtnLoading')}
           </>
         ) : (
-          'Daftar & Lanjut ke Onboarding →'
+          t('register.submitBtn')
         )}
       </button>
 
       {/* ── Divider ─────────────────────────────────────────────── */}
-      <div className={styles.divider}>atau</div>
+      <div className={styles.divider}>{t('login.or')}</div>
 
       {/* ── Tombol Google (OAuth — implementasi di iterasi berikutnya) ── */}
       <button type="button" className={styles.googleBtn} disabled>
         <GoogleIcon />
-        Daftar dengan Google
+        {t('register.googleBtn')}
       </button>
 
       {/* ── Link ke Login ────────────────────────────────────────── */}
       <p className={`text-center mt-3 mb-0 ${styles.authFooter}`}>
-        Sudah punya akun?{' '}
+        {t('register.hasAccount')}{' '}
         <Link to="/login" className={styles.authLink}>
-          Masuk
+          {t('register.loginLink')}
         </Link>
       </p>
     </form>

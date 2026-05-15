@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import useAuthStore from '../../modules/auth/authStore';
 import styles from '../styles/sidebar.module.css';
 
@@ -8,7 +9,7 @@ const getInitials = (name = '') =>
 const NAV_ITEMS = [
   {
     to: '/dashboard',
-    label: 'Dashboard',
+    labelKey: 'sidebar.navDashboard',
     icon: (
       <svg className={styles.navIcon} viewBox="0 0 16 16" fill="none">
         <rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor" />
@@ -20,7 +21,7 @@ const NAV_ITEMS = [
   },
   {
     to: '/topics',
-    label: 'Daftar Topik',
+    labelKey: 'sidebar.navTopics',
     icon: (
       <svg className={styles.navIcon} viewBox="0 0 16 16" fill="none">
         <path d="M2 3h12M2 8h8M2 13h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -29,7 +30,7 @@ const NAV_ITEMS = [
   },
   {
     to: '/quiz',
-    label: 'Latihan Soal',
+    labelKey: 'sidebar.navQuiz',
     icon: (
       <svg className={styles.navIcon} viewBox="0 0 16 16" fill="none">
         <path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.5" />
@@ -40,7 +41,7 @@ const NAV_ITEMS = [
   },
   {
     to: '/history',
-    label: 'Riwayat Sesi',
+    labelKey: 'sidebar.navHistory',
     icon: (
       <svg className={styles.navIcon} viewBox="0 0 16 16" fill="none">
         <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" />
@@ -50,7 +51,7 @@ const NAV_ITEMS = [
   },
   {
     to: '/progress',
-    label: 'Progress',
+    labelKey: 'sidebar.navProgress',
     icon: (
       <svg className={styles.navIcon} viewBox="0 0 16 16" fill="none">
         <path d="M2 12V4l5 5 3-4 4 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -59,7 +60,7 @@ const NAV_ITEMS = [
   },
   {
     to: '/profile',
-    label: 'Profil',
+    labelKey: 'sidebar.navProfile',
     icon: (
       <svg className={styles.navIcon} viewBox="0 0 16 16" fill="none">
         <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.5" />
@@ -75,6 +76,7 @@ const NAV_ITEMS = [
  *   Falls back to user.initial_level from authStore if not provided.
  */
 export default function Sidebar({ levelText }) {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const logoutUser = useAuthStore((s) => s.logoutUser);
   const displayLevel = levelText ?? user?.initial_level ?? '—';
@@ -87,7 +89,7 @@ export default function Sidebar({ levelText }) {
       </div>
 
       <nav>
-        {NAV_ITEMS.map(({ to, label, icon }) => (
+        {NAV_ITEMS.map(({ to, labelKey, icon }) => (
           <NavLink
             key={to}
             to={to}
@@ -96,7 +98,7 @@ export default function Sidebar({ levelText }) {
             }
           >
             {icon}
-            {label}
+            {t(labelKey)}
           </NavLink>
         ))}
       </nav>
@@ -110,7 +112,7 @@ export default function Sidebar({ levelText }) {
           </div>
         </div>
         <button className={styles.logoutBtn} onClick={() => logoutUser()}>
-          Keluar
+          {t('sidebar.logout')}
         </button>
       </div>
     </aside>
