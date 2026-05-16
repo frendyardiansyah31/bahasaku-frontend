@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Sidebar from '../../../shared/components/Sidebar';
 import { getDashboard } from '../dashboardService';
@@ -45,6 +46,7 @@ const skillSubText = (s, t) =>
 
 export default function DashboardPage() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -159,24 +161,29 @@ export default function DashboardPage() {
         <div className={styles.bottomGrid}>
           <div className={styles.rekomCard}>
             <div className={styles.rekomTitle}>{t('dashboard.rekomTitle')}</div>
-            {recommended_topics.map((topic) => (
-              <div key={topic.id} className={styles.rekomItem}>
-                <div className={`${styles.rekomIcon} ${TOPIC_BG[topic.skill]}`}>
-                  {TOPIC_ICON[topic.skill]}
-                </div>
-                <div className={styles.rekomInfo}>
-                  <div className={styles.rekomName}>{topic.name}</div>
-                  <div className={styles.rekomMeta}>
-                    {t('dashboard.rekomMeta', {
-                      skill: t(`dashboard.${SKILL_I18N_KEY[topic.skill]}`, topic.skill),
-                      questions: topic.total_questions,
-                      minutes: topic.estimated_minutes,
-                    })}
+            {recommended_topics.length === 0 ? (
+              <p className={styles.rekomEmpty}>{t('dashboard.rekomEmpty')}</p>
+            ) : recommended_topics.map((topic) => {
+              const primarySkill = topic.skills?.[0];
+              return (
+                <div key={topic.id} className={styles.rekomItem} onClick={() => navigate(`/quiz/${topic.id}`)} style={{ cursor: 'pointer' }}>
+                  <div className={`${styles.rekomIcon} ${TOPIC_BG[primarySkill]}`}>
+                    {TOPIC_ICON[primarySkill]}
                   </div>
+                  <div className={styles.rekomInfo}>
+                    <div className={styles.rekomName}>{topic.name}</div>
+                    <div className={styles.rekomMeta}>
+                      {t('dashboard.rekomMeta', {
+                        skill: t(`dashboard.${SKILL_I18N_KEY[primarySkill]}`, primarySkill),
+                        questions: topic.total_questions,
+                        minutes: topic.estimated_minutes,
+                      })}
+                    </div>
+                  </div>
+                  <span className={styles.rekomArrow}>›</span>
                 </div>
-                <span className={styles.rekomArrow}>›</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className={styles.quickCard}>

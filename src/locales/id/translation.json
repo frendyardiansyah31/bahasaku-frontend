@@ -119,6 +119,7 @@
     "streakTitle": "🔥 Streak Harian",
     "streakSub": "{{count}} hari berturut-turut",
     "rekomTitle": "📚 Rekomendasi Topik Hari Ini",
+    "rekomEmpty": "Tidak ada rekomendasi topik hari ini.",
     "rekomMeta": "{{skill}} · {{questions}} soal · ~{{minutes}} menit",
     "activityTitle": "📊 Ringkasan Aktivitas",
     "activitySessionsKey": "Sesi selesai minggu ini",

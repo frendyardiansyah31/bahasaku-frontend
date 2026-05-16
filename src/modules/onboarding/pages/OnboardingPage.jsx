@@ -1,34 +1,31 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import useAuthStore from '../../auth/authStore';
-import LanguageSwitcher from '../../../shared/components/LanguageSwitcher';
-import styles from '../../../shared/styles/onboarding.module.css';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import useAuthStore from "../../auth/authStore";
+import LanguageSwitcher from "../../../shared/components/LanguageSwitcher";
+import styles from "../../../shared/styles/onboarding.module.css";
 
 // ─── Data Konstanta ───────────────────────────────────────────────────────────
 
 const COUNTRIES = [
-  { flag: '🇮🇩', name: 'Indonesia' },
-  { flag: '🇲🇾', name: 'Malaysia' },
-  { flag: '🇳🇱', name: 'Belanda' },
-  { flag: '🇩🇪', name: 'Jerman' },
-  { flag: '🇺🇸', name: 'Amerika Serikat' },
-  { flag: '🇸🇬', name: 'Singapura' },
-  { flag: '🇦🇺', name: 'Australia' },
-  { flag: '🌏', name: 'Lainnya' },
+  { flag: "🇮🇩", name: "Indonesia" },
+  { flag: "🇲🇾", name: "Malaysia" },
+  { flag: "🇳🇱", name: "Belanda" },
+  { flag: "🇩🇪", name: "Jerman" },
+  { flag: "🇺🇸", name: "Amerika Serikat" },
+  { flag: "🇸🇬", name: "Singapura" },
+  { flag: "🇦🇺", name: "Australia" },
+  { flag: "🌏", name: "Lainnya" },
 ];
 
-const LEVELS = [
-  { code: 'A1' },
-  { code: 'A2' },
-];
+const LEVELS = [{ code: "A1" }, { code: "A2" }];
 
 const TOTAL_STEPS = 3;
 
 const STEP_ICONS = {
-  1: { emoji: '👋', cls: styles.stepIcon1 },
-  2: { emoji: '🌏', cls: styles.stepIcon2 },
-  3: { emoji: '🎯', cls: styles.stepIcon3 },
+  1: { emoji: "👋", cls: styles.stepIcon1 },
+  2: { emoji: "🌏", cls: styles.stepIcon2 },
+  3: { emoji: "🎯", cls: styles.stepIcon3 },
 };
 
 // ─── Sub-komponen ─────────────────────────────────────────────────────────────
@@ -44,11 +41,11 @@ function StepBar({ current }) {
     <div className={styles.steps}>
       {[1, 2, 3].map((i) => (
         <div key={i} className={styles.stepItem}>
-          <div className={circleClass(i)}>
-            {i < current ? '✓' : i}
-          </div>
+          <div className={circleClass(i)}>{i < current ? "✓" : i}</div>
           {i < 3 && (
-            <div className={`${styles.stepLine} ${i < current ? styles.done : ''}`} />
+            <div
+              className={`${styles.stepLine} ${i < current ? styles.done : ""}`}
+            />
           )}
         </div>
       ))}
@@ -120,12 +117,12 @@ export default function OnboardingPage() {
   const isLoading = useAuthStore((s) => s.isLoading);
 
   const [step, setStep] = useState(1);
-  const [country, setCountry] = useState('');
-  const [level, setLevel] = useState('');
-  const [countrySearch, setCountrySearch] = useState('');
+  const [country, setCountry] = useState("");
+  const [level, setLevel] = useState("");
+  const [countrySearch, setCountrySearch] = useState("");
   const [apiError, setApiError] = useState(null);
 
-  const userName = user?.name ?? t('onboarding.defaultName');
+  const userName = user?.name ?? t("onboarding.defaultName");
 
   const filteredCountries = COUNTRIES.filter((c) => {
     const displayName = t(`onboarding.countries.${c.name}`, c.name);
@@ -141,7 +138,7 @@ export default function OnboardingPage() {
       await onboardUser({ country, initial_level: level });
       setStep(4);
     } catch (err) {
-      setApiError(err.response?.data?.message ?? t('onboarding.apiError'));
+      setApiError(err.response?.data?.message ?? t("onboarding.apiError"));
     }
   };
 
@@ -151,18 +148,18 @@ export default function OnboardingPage() {
     return (
       <OnboardingLayout current={1}>
         <div className={styles.stepTag}>
-          {t('onboarding.stepTag', { current: 1, total: TOTAL_STEPS })}
+          {t("onboarding.stepTag", { current: 1, total: TOTAL_STEPS })}
         </div>
         <div className={styles.stepTitle}>
-          {t('onboarding.step1Title', { name: userName })}
+          {t("onboarding.step1Title", { name: userName })}
         </div>
-        <div className={styles.stepSub}>{t('onboarding.step1Sub')}</div>
+        <div className={styles.stepSub}>{t("onboarding.step1Sub")}</div>
         <div className={styles.nav}>
           <span className={styles.progressText}>
-            {t('onboarding.progressText', { current: 1, total: TOTAL_STEPS })}
+            {t("onboarding.progressText", { current: 1, total: TOTAL_STEPS })}
           </span>
           <button className={styles.btnNext} onClick={() => setStep(2)}>
-            {t('onboarding.btnNext')}
+            {t("onboarding.btnNext")}
           </button>
         </div>
       </OnboardingLayout>
@@ -175,15 +172,15 @@ export default function OnboardingPage() {
     return (
       <OnboardingLayout current={2}>
         <div className={styles.stepTag}>
-          {t('onboarding.stepTag', { current: 2, total: TOTAL_STEPS })}
+          {t("onboarding.stepTag", { current: 2, total: TOTAL_STEPS })}
         </div>
-        <div className={styles.stepTitle}>{t('onboarding.step2Title')}</div>
-        <div className={styles.stepSub}>{t('onboarding.step2Sub')}</div>
+        <div className={styles.stepTitle}>{t("onboarding.step2Title")}</div>
+        <div className={styles.stepSub}>{t("onboarding.step2Sub")}</div>
 
         <input
           className={styles.countrySearch}
           type="text"
-          placeholder={t('onboarding.countrySearchPlaceholder')}
+          placeholder={t("onboarding.countrySearchPlaceholder")}
           value={countrySearch}
           onChange={(e) => setCountrySearch(e.target.value)}
         />
@@ -192,7 +189,7 @@ export default function OnboardingPage() {
           {filteredCountries.map((c) => (
             <button
               key={c.name}
-              className={`${styles.countryBtn} ${country === c.name ? styles.selected : ''}`}
+              className={`${styles.countryBtn} ${country === c.name ? styles.selected : ""}`}
               onClick={() => setCountry(c.name)}
             >
               <span className={styles.countryFlag}>{c.flag}</span>
@@ -203,14 +200,14 @@ export default function OnboardingPage() {
 
         <div className={styles.nav}>
           <button className={styles.btnBack} onClick={() => setStep(1)}>
-            {t('onboarding.btnBack')}
+            {t("onboarding.btnBack")}
           </button>
           <button
             className={styles.btnNext}
             onClick={() => setStep(3)}
             disabled={!country}
           >
-            {t('onboarding.btnNext')}
+            {t("onboarding.btnNext")}
           </button>
         </div>
       </OnboardingLayout>
@@ -223,16 +220,16 @@ export default function OnboardingPage() {
     return (
       <OnboardingLayout current={3}>
         <div className={styles.stepTag}>
-          {t('onboarding.stepTag', { current: 3, total: TOTAL_STEPS })}
+          {t("onboarding.stepTag", { current: 3, total: TOTAL_STEPS })}
         </div>
-        <div className={styles.stepTitle}>{t('onboarding.step3Title')}</div>
-        <div className={styles.stepSub}>{t('onboarding.step3Sub')}</div>
+        <div className={styles.stepTitle}>{t("onboarding.step3Title")}</div>
+        <div className={styles.stepSub}>{t("onboarding.step3Sub")}</div>
 
         <div className={styles.levelList}>
           {LEVELS.map((l) => (
             <button
               key={l.code}
-              className={`${styles.levelBtn} ${level === l.code ? styles.selected : ''}`}
+              className={`${styles.levelBtn} ${level === l.code ? styles.selected : ""}`}
               onClick={() => setLevel(l.code)}
             >
               <div className={styles.levelLeft}>
@@ -250,14 +247,16 @@ export default function OnboardingPage() {
 
         <div className={styles.nav}>
           <button className={styles.btnBack} onClick={() => setStep(2)}>
-            {t('onboarding.btnBack')}
+            {t("onboarding.btnBack")}
           </button>
           <button
             className={styles.btnNext}
             onClick={handleSubmit}
             disabled={!level || isLoading}
           >
-            {isLoading ? t('onboarding.btnSaving') : t('onboarding.btnStartLearning')}
+            {isLoading
+              ? t("onboarding.btnSaving")
+              : t("onboarding.btnStartLearning")}
           </button>
         </div>
       </OnboardingLayout>
@@ -277,37 +276,58 @@ export default function OnboardingPage() {
 
       <div className={styles.success}>
         <div className={styles.successIcon}>
-          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6 17L12 23L26 9" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          <svg
+            viewBox="0 0 32 32"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M6 17L12 23L26 9"
+              stroke="white"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </div>
 
         <h2 className={styles.successTitle}>
-          {t('onboarding.successTitle', { name: userName })}
+          {t("onboarding.successTitle", { name: userName })}
         </h2>
-        <p className={styles.successSubtitle}>{t('onboarding.successSubtitle')}</p>
+        <p className={styles.successSubtitle}>
+          {t("onboarding.successSubtitle")}
+        </p>
 
         <div className={styles.summary}>
           <div className={styles.summaryRow}>
-            <span className={styles.summaryKey}>{t('onboarding.summaryName')}</span>
+            <span className={styles.summaryKey}>
+              {t("onboarding.summaryName")}
+            </span>
             <span className={styles.summaryVal}>{userName}</span>
           </div>
           <div className={styles.summaryRow}>
-            <span className={styles.summaryKey}>{t('onboarding.summaryCountry')}</span>
+            <span className={styles.summaryKey}>
+              {t("onboarding.summaryCountry")}
+            </span>
             <span className={styles.summaryVal}>
               {t(`onboarding.countries.${country}`, country)}
             </span>
           </div>
           <div className={styles.summaryRow}>
-            <span className={styles.summaryKey}>{t('onboarding.summaryLevel')}</span>
+            <span className={styles.summaryKey}>
+              {t("onboarding.summaryLevel")}
+            </span>
             <span className={styles.summaryVal}>
               {t(`onboarding.levels.${level}.label`)} ({level})
             </span>
           </div>
         </div>
 
-        <button className={styles.btnStart} onClick={() => navigate('/dashboard')}>
-          {t('onboarding.btnStartPractice')}
+        <button
+          className={styles.btnStart}
+          onClick={() => navigate("/dashboard")}
+        >
+          {t("onboarding.btnStartPractice")}
         </button>
       </div>
     </OnboardingLayout>

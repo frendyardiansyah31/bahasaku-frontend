@@ -119,6 +119,7 @@
     "streakTitle": "🔥 Daily Streak",
     "streakSub": "{{count}} consecutive days",
     "rekomTitle": "📚 Today's Recommended Topics",
+    "rekomEmpty": "No recommended topics today.",
     "rekomMeta": "{{skill}} · {{questions}} questions · ~{{minutes}} min",
     "activityTitle": "📊 Activity Summary",
     "activitySessionsKey": "Completed sessions this week",
